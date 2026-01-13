@@ -1,0 +1,1 @@
+export * from './copybookItem.interface.ts';

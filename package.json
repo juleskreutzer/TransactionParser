@@ -1,0 +1,36 @@
+{
+  "name": "transactionparser",
+  "version": "1.0.0",
+  "description": "Parse files containing transaction data using COBOL copybooks into a TypeScript object",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "compile": "tsc"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/juleskreutzer/TransactionParser.git"
+  },
+  "keywords": [
+    "Mainframe",
+    "z/OS",
+    "parser",
+    "COBOL",
+    "copybook"
+  ],
+  "author": "Jules Kreutzer",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/juleskreutzer/TransactionParser/issues"
+  },
+  "homepage": "https://github.com/juleskreutzer/TransactionParser#readme",
+  "devDependencies": {
+    "@tsconfig/node-lts": "^24.0.0",
+    "@tsconfig/node-ts": "^23.6.2",
+    "@types/node": "^25.0.7"
+  },
+  "dependencies": {
+    "typescript": "^5.9.3"
+  }
+}

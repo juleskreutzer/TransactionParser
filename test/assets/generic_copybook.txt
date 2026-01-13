@@ -1,0 +1,23 @@
+       01  WS-AREA.                                                       
+           03 AREA-XW1.                                                   
+             05 MDUNAM-XW1                         VALUE 'DABPA11N'.      
+               07 FILLER               PIC X(2).                          
+             05 OCKREI-XW1             PIC X       VALUE SPACE.           
+             05 OSKEEL-XW1             PIC X       VALUE SPACE.           
+           03 AREA-XW2.                                                   
+             05 RBIPKKOKD-XW2          PIC X(3).                          
+             05 POSPKTOTD-XW2          PIC X.                             
+             05 KOEPITNOD-XW2          PIC X.                             
+           03 AREA-XW4.                                                   
+             05 OTPBTL-XW4.                                               
+               07 ORPOTW-XW4                       OCCURS 1000.           
+                 09 TBLCRI-XW4.                                           
+                   11 RUSCRI-BW4       PIC S9(2)   VALUE ZERO  COMP.      
+                   11 ROWCRI-XW4                   OCCURS 40.             
+           03 AREA-XW5.                                                   
+             05 XICNKCOED-XW5          PIC X.                             
+             05 CRI-BW5                PIC S9(2)   VALUE ZERO  COMP.      
+             05 TBLCRI-XW5  COPY-FROM W4.
+           03 AREA-XW6.                                                   
+             05 TBLCRI-XW6  COPY-FROM W4.
+             
