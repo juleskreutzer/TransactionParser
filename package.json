@@ -2,10 +2,10 @@
   "name": "transactionparser",
   "version": "1.0.0",
   "description": "Parse files containing transaction data using COBOL copybooks into a TypeScript object",
-  "main": "index.js",
+  "main": "./dist/index.js",
   "type": "module",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "npm run compile && mocha --exit 'test/**/*.test.js'",
     "compile": "tsc"
   },
   "repository": {
@@ -28,7 +28,8 @@
   "devDependencies": {
     "@tsconfig/node-lts": "^24.0.0",
     "@tsconfig/node-ts": "^23.6.2",
-    "@types/node": "^25.0.7"
+    "@types/node": "^25.0.7",
+    "mocha": "^11.7.5"
   },
   "dependencies": {
     "typescript": "^5.9.3"

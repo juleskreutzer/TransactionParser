@@ -26,8 +26,8 @@ export class DataItem implements ICopybookItem{
             throw Error(`Name cannot be an empty string`);
         }
 
-        if (length < 1 ) {
-            throw Error(`Length should at least be 1`);
+        if (length < 1 && picture !== 'group') {
+            throw new Error(`Length should at least be 1 when picture clause is set to 'group'`);
         }
 
         this.level = level;
