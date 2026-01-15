@@ -78,11 +78,13 @@ describe('CopybookParser', () => {
       assert.strictEqual(acct.picture, 'packed', 'ACCOUNT-BALANCE should be packed');
       assert.strictEqual(acct.signed, true, 'ACCOUNT-BALANCE should be signed');
       assert.strictEqual(acct.length, 9, 'ACCOUNT-BALANCE length should be 9 (7+2 decimal digits)');
+      assert.strictEqual(acct.decimals, 2, 'ACCOUNT-BALANCE should have 2 implied decimals');
       const creditLimit = findItemByName('CREDIT-LIMIT', occurs);
       assert(creditLimit, 'CREDIT-LIMIT should be present');
       assert.strictEqual(creditLimit.picture, 'packed', 'CREDIT-LIMIT should be packed');
       assert.strictEqual(creditLimit.signed, true, 'CREDIT-LIMIT should be signed');
       assert.strictEqual(creditLimit.length, 7, 'CREDIT-LIMIT length should be 7 (5+2 decimal digits)');
+      assert.strictEqual(creditLimit.decimals, 2, 'CREDIT-LIMIT should have 2 implied decimals');
     });
   });
 

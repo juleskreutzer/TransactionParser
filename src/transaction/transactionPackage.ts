@@ -1,32 +1,36 @@
-import { Transaction } from '../transaction/transaction.js';
+import { Transaction, checkPathExists, readFile } from '../index.ts';
 
 import * as fs from 'fs';
 
 export class TransactionPackage {
+    private transactions: Transaction[];
     private copybookPath: string;
-    private transactions: Transaction[] = []
+    
+    constructor(copybookPath: string, transactionDataPath?: string) {
+        if (copybookPath === '') throw new Error(`Please provide a copybook path`);
 
-    constructor(copybookPath: string, transactionFile?: string) {
-        if (copybookPath === '') {
-            throw Error(`Please provide a Copybook path that is used for this transaction package`);
-        }
+        // Check if copybook path exists
+        checkPathExists(copybookPath);
 
-        this.copybookPath = copybookPath
+        this.copybookPath = copybookPath;
+        this.transactions = [];
 
-        if(transactionFile) {
-            this.loadTransactionDataFromFile(transactionFile);
-        }
-    }
-
-    loadTransactionData(data: string) {
-
-    }
-
-    loadTransactionDataFromFile(filepath: string) {
-        if (fs.existsSync(filepath)) {
-            //TODO: Load data from filepath
-        } else {
-            throw new Error(`Provided filepath for transaction file does not exist`);
+        if (transactionDataPath && transactionDataPath !== '') {
+            // Load transaction data from file
+            this.loadTransactionDataFromFile(transactionDataPath);
         }
     }
+
+    getTransactions(): Transaction[] {
+        return this.transactions;
+    }
+
+    loadTransactionData(data: string): void {
+
+    }
+
+    loadTransactionDataFromFile(path: string): void {
+        this.loadTransactionData(readFile(path));
+    }
+
 }

@@ -1,4 +1,4 @@
-import type { picture } from '../type/picture.type.js';
+import type { picture } from '../index.ts';
 
 /**
  * @interface

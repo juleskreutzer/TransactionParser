@@ -1,5 +1,5 @@
-import type { ICopybookItem, picture } from "../index.ts";
-import { Transaction, DataItem } from "../index.ts";
+import type { picture } from "../index.ts";
+import { DataItem, readFile, checkPathExists } from "../index.ts";
 
 import * as fs from 'fs'; 
 
@@ -12,9 +12,8 @@ export class CopybookParser {
             throw new Error(`Please provide a copybook path`);
         }
 
+        checkPathExists(copybookPath);
         this.copybookPath = copybookPath;
-        this.validateCopybookPath();
-
         this.parsedCopybook = [];
     }
 
@@ -41,12 +40,8 @@ export class CopybookParser {
      *
      */
     parse(): DataItem[] {
-        this.validateCopybookPath();
-
-        // Clear any previously parsed copybook
-        this.parsedCopybook = [];
-
-        const data = fs.readFileSync(this.copybookPath).toString();
+        this.parsedCopybook = []; // reset previous parse result
+        const data = readFile(this.copybookPath);
         if (data === '') {
             throw new Error(`Loaded transaction file is empty`);
         }
@@ -114,6 +109,19 @@ export class CopybookParser {
                     const temp = picToken.replace(/9\((\d+)\)/g, '');
                     len += (temp.match(/9/g) || []).length;
                     length = len || 1;
+
+                    // Determine implied decimal digits (V specifier)
+                    let decimals = 0;
+                    const vParen = picToken.match(/V9\((\d+)\)/i);
+                    if (vParen) {
+                        decimals = Number(vParen[1]);
+                    } else {
+                        const vMatches = picToken.match(/V(9+)/i);
+                        if (vMatches) decimals = vMatches[1]!.length;
+                    }
+
+                    // store decimals on a per-item basis via temporary var
+                    (picMatch as any).__decimals = decimals;
                 }
             } else {
                 picture = 'group';
@@ -137,11 +145,11 @@ export class CopybookParser {
                 else value = valueMatch[1];
             }
 
-            const dataItem: DataItem = new DataItem(level, name, picture, length, signed, occurs);
+            const decimalsForItem = (picMatch && (picMatch as any).__decimals) ? (picMatch as any).__decimals : 0;
+            const dataItem: DataItem = new DataItem(level, name, picture, length, signed, occurs, undefined, undefined, value, decimalsForItem);
             if (value !== undefined) dataItem.value = value;
 
-            if (redefinesName) {
-                const target = this.findItemByName(redefinesName, dataItems);
+            if (redefinesName) {                const target = this.findItemByName(redefinesName, dataItems);
                 if (target) {
                     dataItem.redefines = target
                 } else {
@@ -176,7 +184,7 @@ export class CopybookParser {
         if (copybookPath === '') {
             throw new Error(`Please provide a copybook path`);
         } else {
-            this.validateCopybookPath();
+            checkPathExists(copybookPath);
             this.copybookPath = copybookPath;
             this.parsedCopybook = [];
         }
@@ -203,19 +211,6 @@ export class CopybookParser {
                 const found = this.findItemByName(name, item.children as DataItem[])
                 if (found) return found;
             }
-        }
-    }
-
-    /**
-     * Validates copybook path exists
-     * @throws Throws error when `this.copybookPath` is empty or when the provided path does not exist
-     */
-    private validateCopybookPath(): void {
-        if (this.copybookPath === '') {
-            throw new Error(`No copybook path set`);
-        }
-        else if (!fs.existsSync(this.copybookPath)) {
-            throw new Error(`Provided copybook path '${this.copybookPath}' does not exist`);
         }
     }
 }
