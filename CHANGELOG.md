@@ -1,3 +1,9 @@
+#### 0.0.2-alpha.0 (2026-01-17)
+
+##### New Features
+
+* **parser:**  Support for handling OCCURS clauses other(refactoring): Refactored imports fix(tests): Adjusted unit tests to handle OCCURS clauses ([4c8c994b](https://github.com/juleskreutzer/TransactionParser/commit/4c8c994b9920f9db0dc6f0f74eed685d3e8be7d2))
+
 #### 0.0.1 (2026-01-15)
 
 ##### Other Changes (-refactor)
