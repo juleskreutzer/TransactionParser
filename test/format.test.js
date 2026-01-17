@@ -1,6 +1,6 @@
 import assert from 'assert';
 import { describe, it } from 'mocha';
-import { Formatter } from '../dist/transaction/index.js';
+import { Formatter } from '../dist/transaction/formatter.js';
 
 describe('formatter helpers', () => {
   describe('formatString', () => {

@@ -1,4 +1,5 @@
-import { Transaction, checkPathExists, readFile } from '../index.ts';
+import { Transaction } from "./transaction.js";
+import { checkPathExists, readFile } from "../util/index.js";
 
 import * as fs from 'fs';
 

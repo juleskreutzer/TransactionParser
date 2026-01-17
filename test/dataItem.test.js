@@ -1,6 +1,6 @@
 import assert from 'assert';
 import { describe, it } from 'mocha';
-import { DataItem } from '../dist/index.js';
+import { DataItem } from '../dist/transaction/dataItem.js';
 
 describe('DataItem.setValue', () => {
   it('pads and truncates strings to defined length', () => {

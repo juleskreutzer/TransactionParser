@@ -1,6 +1,6 @@
 import assert from 'assert';
 import { describe, it } from 'mocha';
-import { DataItem } from '../dist/index.js';
+import { DataItem } from '../dist/transaction/dataItem.js';
 
 describe('DataItem.format integration with decimals', () => {
   it('formats numeric values respecting implied decimals and length', () => {

@@ -1,4 +1,4 @@
-import type { IFormatOptions } from '../index.ts';
+import type { IFormatOptions } from './formatOptions.interface.js';
 
 export interface INumericFormatOptions extends IFormatOptions {
     decimals?: number;

@@ -1,7 +1,6 @@
-import type { picture } from "../index.ts";
-import { DataItem, readFile, checkPathExists } from "../index.ts";
-
-import * as fs from 'fs'; 
+import type { picture } from "../type/picture.type.js";
+import { DataItem } from "../transaction/dataItem.js";
+import { readFile, checkPathExists } from "../util/index.js";
 
 export class CopybookParser {
     private copybookPath: string
@@ -149,7 +148,8 @@ export class CopybookParser {
             const dataItem: DataItem = new DataItem(level, name, picture, length, signed, occurs, undefined, undefined, value, decimalsForItem);
             if (value !== undefined) dataItem.value = value;
 
-            if (redefinesName) {                const target = this.findItemByName(redefinesName, dataItems);
+            if (redefinesName) {                
+                const target = this.findItemByName(redefinesName, dataItems);
                 if (target) {
                     dataItem.redefines = target
                 } else {
@@ -169,8 +169,8 @@ export class CopybookParser {
             
             stack.push({ level: level, item: dataItem });
         }
-        
-        this.parsedCopybook = dataItems;
+
+        this.parsedCopybook = this.handleOccurs(dataItems);
         return dataItems;
     }
 
@@ -213,4 +213,88 @@ export class CopybookParser {
             }
         }
     }
+
+    
+    /**
+     * Expands DataItems with OCCURS clause
+     * 
+     * Recursively processes a list of DataItems, expanding any item with an OCCURS value
+     * into multiple cloned instances with suffixed names (e.g., "field-1", "field-2").
+     * 
+     * @param items - Array of DataItems to process, potentially containing OCCURS clauses
+     * @returns Array of expanded DataItems with all OCCURS clauses resolved into individual items
+     */
+    private handleOccurs(items: DataItem[]): DataItem[] {
+        const expand = (item: DataItem): DataItem[] => {
+            // If no OCCURS, just recurse into children
+            if (!item.occurs || item.occurs <= 1) {
+                if (item.children) {
+                    item.children = this.handleOccurs(item.children as DataItem[]);
+                }
+                return [item];
+            }
+
+            const expandedItems: DataItem[] = [];
+
+            for (let i = 1; i <= item.occurs; i++) {
+                // Shallow clone base properties
+                const clone = new DataItem(
+                    item.level,
+                    `${item.name}-${i}`,
+                    item.picture,
+                    item.length,
+                    item.signed,
+                    item.occurs,
+                    undefined,
+                    undefined,
+                    item.value,
+                    item.decimals
+                );
+
+                clone.redefines = item.redefines;
+
+                // Deep clone children
+                if (item.children) {
+                    clone.children = this.handleOccurs(
+                        item.children.map(child => this.cloneItem(child as DataItem))
+                    );
+                }
+
+                expandedItems.push(clone);
+            }
+
+            return expandedItems;
+        };
+
+        const result: DataItem[] = [];
+        for (const item of items) {
+            result.push(...expand(item));
+        }
+        return result;
+    }
+
+    private cloneItem(item: DataItem): DataItem {
+        const clone = new DataItem(
+            item.level,
+            item.name,
+            item.picture,
+            item.length,
+            item.signed,
+            item.occurs,
+            undefined,
+            undefined,
+            item.value,
+            item.decimals
+        );
+
+        clone.redefines = item.redefines;
+
+        if (item.children) {
+            clone.children = item.children.map(child => this.cloneItem(child as DataItem));
+        }
+
+        return clone;
+    }
+
+
 }

@@ -63,15 +63,22 @@ describe('CopybookParser', () => {
       const customer = findItemByName('CUSTOMER-RECORD', occurs);
       assert(customer, 'CUSTOMER-RECORD should be present');
       assert.strictEqual(customer.level, 1, 'CUSTOMER-RECORD should be level 1');
-      const phoneNumbers = findItemByName('PHONE-NUMBERS', occurs);
-      assert(phoneNumbers, 'PHONE-NUMBERS should be present');
-      assert.strictEqual(phoneNumbers.occurs, 3, 'PHONE-NUMBERS should have occurs = 3');
-      assert(Array.isArray(phoneNumbers.children), 'PHONE-NUMBERS should have children');
-      assert(phoneNumbers.children.length >= 1, 'PHONE-NUMBERS should contain at least one child');
-      const phoneNumber = phoneNumbers.children[0];
-      assert.strictEqual(phoneNumber.name, 'PHONE-NUMBER', 'child should be PHONE-NUMBER');
-      assert.strictEqual(phoneNumber.picture, 'number', 'PHONE-NUMBER picture should be number');
-      assert.strictEqual(phoneNumber.length, 10, 'PHONE-NUMBER length should be 10');
+
+      // After expansion, PHONE-NUMBERS is expanded to PHONE-NUMBERS-1, -2, -3
+      const phoneNumbers0 = findItemByName('PHONE-NUMBERS-1', occurs);
+      const phoneNumbers1 = findItemByName('PHONE-NUMBERS-2', occurs);
+      const phoneNumbers2 = findItemByName('PHONE-NUMBERS-3', occurs);
+      assert(phoneNumbers0, 'PHONE-NUMBERS-1 should be present');
+      assert(phoneNumbers1, 'PHONE-NUMBERS-2 should be present');
+      assert(phoneNumbers2, 'PHONE-NUMBERS-3 should be present');
+
+      // Check one of them
+      assert(Array.isArray(phoneNumbers0.children), 'PHONE-NUMBERS-1 should have children');
+      assert(phoneNumbers0.children.length >= 1, 'PHONE-NUMBERS-1 should contain at least one child');
+      const phoneNumber = phoneNumbers0.children[0];
+      assert.strictEqual(phoneNumber.name, 'PHONE-NUMBER-1', 'child should be PHONE-NUMBER-1');
+      assert.strictEqual(phoneNumber.picture, 'number', 'PHONE-NUMBER-1 picture should be number');
+      assert.strictEqual(phoneNumber.length, 10, 'PHONE-NUMBER-1 length should be 10');
 
       const acct = findItemByName('ACCOUNT-BALANCE', occurs);
       assert(acct, 'ACCOUNT-BALANCE should be present');

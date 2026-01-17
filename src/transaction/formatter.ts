@@ -1,4 +1,4 @@
-import type { INumericFormatOptions } from "../index.ts";
+import type { INumericFormatOptions } from "../interface/numericFormatOptions.interface.js";
 
 export class Formatter {
     /**

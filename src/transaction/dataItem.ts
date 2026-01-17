@@ -1,5 +1,6 @@
-import type { ICopybookItem, picture } from '../index.ts';
-import { Formatter } from './index.ts';
+import type { ICopybookItem } from "../interface/copybookItem.interface.js";
+import type { picture } from "../type/picture.type.js";
+import { Formatter } from "./formatter.js";
 
 /**
  * The DataItem class represents a single line in a COBOL copybook as an object.
@@ -18,7 +19,7 @@ export class DataItem implements ICopybookItem{
     children?: ICopybookItem[] | undefined;
     value?: any;
 
-    constructor(level: number, name: string, picture: picture, length: number, signed: boolean = false, occurs?: number, redefines?: ICopybookItem, children?: ICopybookItem[], value?: any, decimals?: number) {
+    constructor(level: number, name: string, picture: picture, length: number, signed: boolean = false, occurs?: number, redefines?: DataItem, children?: ICopybookItem[], value?: any, decimals?: number) {
         if (level < 1) {
             throw Error(`Level should at least be 1`);
         }

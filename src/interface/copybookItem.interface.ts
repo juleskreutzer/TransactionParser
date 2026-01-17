@@ -1,4 +1,4 @@
-import type { picture } from '../index.ts';
+import type { picture } from "../type/picture.type.js";
 
 /**
  * @interface
@@ -23,5 +23,7 @@ export interface ICopybookItem {
 
     children?: ICopybookItem[] | undefined;
 
-    value?: any
+    value?: any;
+
+    decimals?: number
 }
