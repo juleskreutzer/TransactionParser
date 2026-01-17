@@ -1,3 +1,11 @@
+#### 0.0.2-alpha.1 (2026-01-17)
+
+##### Other Changes
+
+* **misc:**
+  *  Updated README.md to include docs and sample ([e4d709ff](https://github.com/juleskreutzer/TransactionParser/commit/e4d709ff70c263cfde2f929b4b3460d5ee778213))
+  *  Updated README.md to reflect latest changes ([e45b96fd](https://github.com/juleskreutzer/TransactionParser/commit/e45b96fd2e5a5af66649b519c18cdbfd262cb997))
+
 #### 0.0.2-alpha.0 (2026-01-17)
 
 ##### New Features
