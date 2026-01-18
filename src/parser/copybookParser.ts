@@ -24,29 +24,6 @@ export class CopybookParser {
     }
 
     /**
-     * Parse the copybook file and return an array of top-level DataItem objects.
-     *
-     * Behavior:
-     * - Validates that `this.copybookPath` is set and exists (throws `Error` if not).
-     * - Reads the copybook file as text and splits it into lines using CRLF or LF.
-     * - Normalizes tabs to spaces and trims each line; skips blank lines and full-line
-     *   comments that start with `*`.
-     * - Removes trailing periods from lines before parsing.
-     * - Extracts a line header consisting of a numeric level, an identifier/name and
-     *   the remainder of the line. From the remainder it recognizes the clauses
-     *   `PIC` (string/number/packed), `OCCURS`, `REDEFINES`, and `VALUE`.
-     * - Builds a tree of `DataItem` objects using numeric levels to determine
-     *   parent/child relationships.
-     *
-     * Returns:
-     * - `DataItem[]` — an array of root-level copybook items (groups and fields).
-     *
-     * Throws:
-     * - `Error` when the copybook path is not set or the file is empty.
-     *
-     */
-
-    /**
      * Parses a copybook for which the path is set in either the `constructor` or {@link CopybookParser.updateCopybookPath | updateCopybookPath(path)} 
      * and returns an array of {@link DataItem}'s representing the copybook
      * 
