@@ -2,6 +2,13 @@ import type { picture } from "../type/picture.type.js";
 import { DataItem } from "../transaction/dataItem.js";
 import { readFile, checkPathExists } from "../util/index.js";
 
+/**
+ * @class
+ * CopybookParser lets you parse a COBOL copybook into an array of {@link DataItem}'s that can be then be used further.
+ * 
+ * Together with the {@link Transaction} and {@link TransactionPackage} class, it can be used to load transaction data from a file, parse it into
+ * {@link DataItem} objects, alter the value and store the (modified) transaction
+ */
 export class CopybookParser {
     private copybookPath: string
     private parsedCopybook: DataItem[];
@@ -38,11 +45,28 @@ export class CopybookParser {
      * - `Error` when the copybook path is not set or the file is empty.
      *
      */
+
+    /**
+     * Parses a copybook for which the path is set in either the `constructor` or {@link CopybookParser.updateCopybookPath | updateCopybookPath(path)} 
+     * and returns an array of {@link DataItem}'s representing the copybook
+     * 
+     * @remarks
+     * - Lines in copybook will be split based on `CRLF` or `LF`
+     * - Tabs will be replaced with spaces, all lines will be trimmed
+     * - Skips blank lines or comment lines starting with `*`
+     * 
+     * @remarks
+     * If the copybook contains an `OCCURS` clause, the processed dataItem will be replaced by `n` dataItems. They will be identified by the {@link DataItem.name} property
+     * like `NAME-n`
+     * 
+     * @throws Throws an error when copybook path is not set or doesn't exist, or in certain cases when unable to parse the current copybook line
+     * @returns Array of {@link DataItem} representing the copybook 
+     */
     parse(): DataItem[] {
         this.parsedCopybook = []; // reset previous parse result
         const data = readFile(this.copybookPath);
         if (data === '') {
-            throw new Error(`Loaded transaction file is empty`);
+            throw new Error(`Loaded copybook file is empty`);
         }
 
         const lines = data
@@ -190,10 +214,24 @@ export class CopybookParser {
         }
     }
 
+    /**
+     * Gets parsed copybook
+     * 
+     * @remark
+     * Return value will be empty if the {@link CopybookParser.parse | parse()} function has not yet been executed
+     * @returns List of {@link DataItem}'s representing the previously parsed copybook 
+     */
     getParsedCopybook(): DataItem[] {
         return this.parsedCopybook;
     }
 
+    /**
+     * Convert the parsed copybook to a JSON string
+     * 
+     * @remark
+     * Return value will be an empty JSON array if the {@link CopybookParser.parse | parse()} function has not yet been executed
+     * @returns string JSON object representing the copybook as string
+     */
     toJson(): string {
         return JSON.stringify(this.parsedCopybook);
     }
@@ -273,6 +311,11 @@ export class CopybookParser {
         return result;
     }
 
+    /**
+     * Clones dataItem into a new instance to separate references for further use
+     * @param item {@link DataItem} to be cloned
+     * @returns item Cloned {@link DataItem}
+     */
     private cloneItem(item: DataItem): DataItem {
         const clone = new DataItem(
             item.level,
@@ -295,6 +338,4 @@ export class CopybookParser {
 
         return clone;
     }
-
-
 }

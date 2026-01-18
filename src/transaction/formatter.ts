@@ -1,5 +1,11 @@
 import type { INumericFormatOptions } from "../interface/numericFormatOptions.interface.js";
 
+/**
+ * @experimental
+ * @class
+ * 
+ * The Fromatter class contains helper functions to convert the value of a {@link DataItem} into a COBOL-style, fixed-width string
+ */
 export class Formatter {
     /**
      * Formats string to the provided length. Adds spaces at the end

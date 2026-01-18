@@ -3,6 +3,7 @@ import type { picture } from "../type/picture.type.js";
 import { Formatter } from "./formatter.js";
 
 /**
+ * @class
  * The DataItem class represents a single line in a COBOL copybook as an object.
  * 
  * Data of the line such as the used level, the name of the element, picture clause etc. are parsen into properties of the {@link DataItem}
@@ -45,7 +46,7 @@ export class DataItem implements ICopybookItem{
     }
 
     /**
-     * Set the value for this DataItem taking `picture` and `length` into account.
+     * Set the value for this {@link DataItem} taking `picture` and `length` into account.
      * - For `string` pictures the value is converted to string, truncated or padded with spaces to `length`.
      * - For `number` and `packed` pictures the value is coerced to a Number and validated against `length` (total digits). Throws when value is not numeric or exceeds the defined length.
      * - For `group` pictures setting a value is not allowed (throws).
@@ -98,7 +99,9 @@ export class DataItem implements ICopybookItem{
     }
 
     /**
-     * Format the DataItem value as a COBOL-style fixed-width string using formatter helpers.
+     * Format the {@link DataItem} value as a COBOL-style fixed-width string using formatter helpers.
+     * 
+     * @returns string String representation of the value for the current instance
      */
     format(): string {
         // Groups do not render as a value

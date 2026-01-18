@@ -1,8 +1,12 @@
 import { Transaction } from "./transaction.js";
 import { checkPathExists, readFile } from "../util/index.js";
 
-import * as fs from 'fs';
-
+/**
+ * @experimental
+ * @class
+ * 
+ * The TransactionPackage class represents a transaction file that can contain multiple transactions.
+ */
 export class TransactionPackage {
     private transactions: Transaction[];
     private copybookPath: string;
