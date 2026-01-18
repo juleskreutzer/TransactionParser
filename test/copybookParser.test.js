@@ -76,7 +76,7 @@ describe('CopybookParser', () => {
       assert(Array.isArray(phoneNumbers0.children), 'PHONE-NUMBERS-1 should have children');
       assert(phoneNumbers0.children.length >= 1, 'PHONE-NUMBERS-1 should contain at least one child');
       const phoneNumber = phoneNumbers0.children[0];
-      assert.strictEqual(phoneNumber.name, 'PHONE-NUMBER-1', 'child should be PHONE-NUMBER-1');
+      assert.strictEqual(phoneNumber.name, 'PHONE-NUMBER', 'child should be PHONE-NUMBER-1');
       assert.strictEqual(phoneNumber.picture, 'number', 'PHONE-NUMBER-1 picture should be number');
       assert.strictEqual(phoneNumber.length, 10, 'PHONE-NUMBER-1 length should be 10');
 
@@ -148,7 +148,7 @@ describe('CopybookParser', () => {
 
     it('throws when the copybook file is empty', () => {
       const p = new CopybookParser(path.join(assetsDir, 'empty_copybook.txt'));
-      assert.throws(() => p.parse(), /Loaded transaction file is empty/);
+      assert.throws(() => p.parse(), /Loaded copybook file is empty/);
     });
   });
 });
