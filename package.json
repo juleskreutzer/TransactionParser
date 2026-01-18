@@ -1,10 +1,12 @@
 {
   "name": "transactionparser",
-  "version": "0.0.2-alpha.2",
+  "version": "0.0.2-alpha.3",
   "description": "Parse files containing transaction data using COBOL copybooks into a TypeScript object",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
-  "files": ["dist/**/*"],
+  "files": [
+    "dist/**/*"
+  ],
   "type": "module",
   "scripts": {
     "test": "npm run compile && mocha --exit 'test/**/*.test.js'",
@@ -40,6 +42,5 @@
     "mocha": "^11.7.5",
     "typescript": "^5.9.3"
   },
-  "dependencies": {
-  }
+  "dependencies": {}
 }
