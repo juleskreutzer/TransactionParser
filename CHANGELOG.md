@@ -1,3 +1,9 @@
+#### 0.1.2 (2026-01-18)
+
+##### Other Changes
+
+*  Clean up left over comments ([6dad9888](https://github.com/juleskreutzer/TransactionParser/commit/6dad98888646ced2041cd0540a23c10f73f01724))
+
 #### 0.1.1 (2026-01-18)
 
 ##### Other Changes
