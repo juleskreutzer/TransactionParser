@@ -1,3 +1,13 @@
+#### 0.0.2-alpha.2 (2026-01-18)
+
+##### Documentation Changes
+
+*  Expanded TypeDoc comments ([6977c1ac](https://github.com/juleskreutzer/TransactionParser/commit/6977c1aca5dc9e47463c49f880b0889d90f836c4))
+
+##### Other Changes
+
+* Prepare for npm packaging ([26aee42a](https://github.com/juleskreutzer/TransactionParser/commit/26aee42a4ea143ce96f736f90a5eff282f57b3c8))
+
 #### 0.0.2-alpha.1 (2026-01-17)
 
 ##### Other Changes
