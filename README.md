@@ -1,6 +1,6 @@
 # TransactionParser
 
-[![Node.js Package](https://github.com/juleskreutzer/TransactionParser/actions/workflows/npm-publish.yml/badge.svg?branch=main)](https://github.com/juleskreutzer/TransactionParser/actions/workflows/npm-publish.yml)
+[![Node.js Package](https://github.com/juleskreutzer/TransactionParser/actions/workflows/npm-publish.yml/badge.svg)](https://github.com/juleskreutzer/TransactionParser/actions/workflows/npm-publish.yml)
 
 Parse files containing transaction data using COBOL copybooks into a TypeScript object
 
