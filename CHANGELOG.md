@@ -1,3 +1,13 @@
+#### 0.1.6 (2026-01-18)
+
+##### Bug Fixes
+
+* Include missing files in npm package ([4cbcd562](https://github.com/juleskreutzer/TransactionParser/commit/4cbcd5621929a9fa657b662ced63504b5e556f72))
+
+##### Other Changes
+
+* **misc:**  Adjusted badge URL in README.md ([c6d670cb](https://github.com/juleskreutzer/TransactionParser/commit/c6d670cbb72c5008a4f0cd52f2d3b7e5835ca893))
+
 #### 0.1.5 (2026-01-18)
 
 #### 0.1.4 (2026-01-18)
