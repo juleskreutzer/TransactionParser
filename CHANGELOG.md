@@ -1,3 +1,9 @@
+#### 0.1.4 (2026-01-18)
+
+##### Other Changes
+
+* **misc:**  Added status badge to README.md ([36463f6f](https://github.com/juleskreutzer/TransactionParser/commit/36463f6f9b333173b8518705fc5468882ac2205a))
+
 #### 0.1.3 (2026-01-18)
 
 ##### Bug Fixes
