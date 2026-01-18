@@ -1,3 +1,9 @@
+#### 0.1.1 (2026-01-18)
+
+##### Other Changes
+
+* //github.com/juleskreutzer/TransactionParser ([417d9220](https://github.com/juleskreutzer/TransactionParser/commit/417d9220f110abc254f083b76037ae433070d513))
+
 ### 0.1.0.3 (2026-01-18)
 
 #### 0.0.2-alpha.2 (2026-01-18)
