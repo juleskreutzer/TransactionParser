@@ -1,3 +1,9 @@
+#### 0.1.3 (2026-01-18)
+
+##### Bug Fixes
+
+* **tests:**  Fixed failing test ([a699da0f](https://github.com/juleskreutzer/TransactionParser/commit/a699da0fe9cacae4db0fe9358088455a3b6c08f3))
+
 #### 0.1.2 (2026-01-18)
 
 ##### Other Changes
