@@ -1,6 +1,6 @@
 {
   "name": "transactionparser",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Parse files containing transaction data using COBOL copybooks into a TypeScript object",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
