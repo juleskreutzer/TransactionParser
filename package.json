@@ -3,11 +3,13 @@
   "version": "0.0.2-alpha.2",
   "description": "Parse files containing transaction data using COBOL copybooks into a TypeScript object",
   "main": "./dist/index.js",
-  "exports": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "files": ["dist/**/*"],
   "type": "module",
   "scripts": {
     "test": "npm run compile && mocha --exit 'test/**/*.test.js'",
-    "compile": "tsc",
+    "clean": "rm -r ./dist",
+    "build": "tsc",
     "release:major": "changelog -M && git add CHANGELOG.md && git commit -m 'updated CHANGELOG.md' && npm version major && git push origin && git push origin --tags",
     "release:minor": "changelog -m && git add CHANGELOG.md && git commit -m 'updated CHANGELOG.md' && npm version minor && git push origin && git push origin --tags",
     "release:patch": "changelog -p && git add CHANGELOG.md && git commit -m 'updated CHANGELOG.md' && npm version patch && git push origin && git push origin --tags",
@@ -35,9 +37,9 @@
     "@tsconfig/node-ts": "^23.6.2",
     "@types/node": "^25.0.7",
     "generate-changelog": "^1.8.0",
-    "mocha": "^11.7.5"
+    "mocha": "^11.7.5",
+    "typescript": "^5.9.3"
   },
   "dependencies": {
-    "typescript": "^5.9.3"
   }
 }

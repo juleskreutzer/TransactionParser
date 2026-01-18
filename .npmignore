@@ -1,0 +1,30 @@
+# Exclude source files
+src/
+
+# Exclude tests
+test/
+
+# Exclude node_modules
+node_modules/
+
+# Exclude TypeScript config
+tsconfig.json
+
+# Exclude GitHub specific files
+.github/
+
+# Exclude build artifacts not needed
+*.tgz
+*.log
+
+# Exclude development files
+.nyc_output/
+coverage/
+
+# Exclude IDE files
+.vscode/
+.idea/
+
+# Exclude OS files
+.DS_Store
+Thumbs.db
