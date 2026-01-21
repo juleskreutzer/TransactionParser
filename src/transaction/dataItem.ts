@@ -13,14 +13,16 @@ export class DataItem implements ICopybookItem{
     name: string;
     picture: picture;
     length: number;
+    start: number | undefined; // Will be set after initial creation in parser
+    end: number | undefined; // Will be set after initial creation in parser
     signed: boolean;
     decimals?: number;
     occurs?: number | undefined;
     redefines?: ICopybookItem | undefined;
     children?: ICopybookItem[] | undefined;
-    value?: any;
+    value?: string | undefined;
 
-    constructor(level: number, name: string, picture: picture, length: number, signed: boolean = false, occurs?: number, redefines?: DataItem, children?: ICopybookItem[], value?: any, decimals?: number) {
+    constructor(level: number, name: string, picture: picture, length: number, signed: boolean = false, occurs?: number, redefines?: ICopybookItem, children?: ICopybookItem[], value?: any, decimals?: number) {
         if (level < 1) {
             throw Error(`Level should at least be 1`);
         }
@@ -60,9 +62,9 @@ export class DataItem implements ICopybookItem{
             return;
         }
 
-        if (this.picture === 'group') {
-            throw new Error(`Cannot set value on a group item '${this.name}'`);
-        }
+        // if (this.picture === 'group') {
+        //     throw new Error(`Cannot set value on a group item '${this.name}'`);
+        // }
 
         if (this.picture === 'string') {
             let s = String(val);
@@ -90,7 +92,7 @@ export class DataItem implements ICopybookItem{
                 throw new Error(`Value for '${this.name}' exceeds defined length (${this.length})`);
             }
 
-            this.value = num;
+            this.value = String(num).padStart(this.length, '0');;
             return;
         }
 

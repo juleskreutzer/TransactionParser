@@ -19,6 +19,10 @@ export interface ICopybookItem {
     /** Total length of the copybook item */
     length: number;
 
+    start: number | undefined;
+
+    end: number | undefined;
+
     /** Indicator if the copybook item is signed */
     signed: boolean;
 
@@ -32,8 +36,10 @@ export interface ICopybookItem {
     children?: ICopybookItem[] | undefined;
 
     /** Value for the current copybook item. Currently not in use, optional */
-    value?: any;
+    value?: string | undefined;
 
     /** Amount of decimals used, related to PIC clauses defining decimals. Currently not in use, optional */
-    decimals?: number
+    decimals?: number;
+
+    setValue(value: any): void;
 }

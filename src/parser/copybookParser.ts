@@ -1,6 +1,7 @@
 import type { picture } from "../type/picture.type.js";
 import { DataItem } from "../transaction/dataItem.js";
 import { readFile, checkPathExists } from "../util/index.js";
+import type { ICopybookItem } from "../interface/copybookItem.interface.ts";
 
 /**
  * @class
@@ -12,7 +13,8 @@ import { readFile, checkPathExists } from "../util/index.js";
 export class CopybookParser {
     private copybookPath: string
     private parsedCopybook: DataItem[];
-
+    private totalLength: number = 0;
+    
     constructor(copybookPath: string) {
         if (copybookPath === '') {
             throw new Error(`Please provide a copybook path`);
@@ -147,14 +149,14 @@ export class CopybookParser {
 
             const decimalsForItem = (picMatch && (picMatch as any).__decimals) ? (picMatch as any).__decimals : 0;
             const dataItem: DataItem = new DataItem(level, name, picture, length, signed, occurs, undefined, undefined, value, decimalsForItem);
-            if (value !== undefined) dataItem.value = value;
+            if (value !== undefined) dataItem.setValue(value);
 
             if (redefinesName) {                
                 const target = this.findItemByName(redefinesName, dataItems);
                 if (target) {
                     dataItem.redefines = target
                 } else {
-                    dataItem.redefines = { level: 0, name: redefinesName, picture: 'group', length: 0, signed: false }
+                    dataItem.redefines = { level: 0, name: redefinesName, picture: 'group', length: 0, signed: false } as DataItem
                 }
             }
 
@@ -172,7 +174,8 @@ export class CopybookParser {
         }
 
         this.parsedCopybook = this.handleOccurs(dataItems);
-        return dataItems;
+        this.calculatePositions(this.parsedCopybook);
+        return this.parsedCopybook;
     }
 
     /**
@@ -229,7 +232,6 @@ export class CopybookParser {
         }
     }
 
-    
     /**
      * Expands DataItems with OCCURS clause
      * 
@@ -314,5 +316,25 @@ export class CopybookParser {
         }
 
         return clone;
+    }
+
+    private calculatePositions(dataItems: ICopybookItem[]): void {
+        for(let item of dataItems) {
+            if (item.redefines) {
+                continue;
+            }
+
+            if (item.children && item.children.length > 0) {
+                this.calculatePositions(item.children);
+            } else {
+                const start = this.totalLength;
+                const end = this.totalLength + item.length;
+
+                item.start = start;
+                item.end = end;
+
+                this.totalLength += item.length;
+            }
+        }
     }
 }
