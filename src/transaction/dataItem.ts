@@ -24,11 +24,11 @@ export class DataItem implements ICopybookItem{
 
     constructor(level: number, name: string, picture: picture, length: number, signed: boolean = false, occurs?: number, redefines?: ICopybookItem, children?: ICopybookItem[], value?: any, decimals?: number) {
         if (level < 1) {
-            throw Error(`Level should at least be 1`);
+            throw new Error(`Level should at least be 1`);
         }
 
         if (name === '') {
-            throw Error(`Name cannot be an empty string`);
+            throw new Error(`Name cannot be an empty string`);
         }
 
         if (length < 1 && picture !== 'group') {

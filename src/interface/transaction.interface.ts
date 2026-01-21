@@ -1,13 +1,7 @@
 import type { ICopybookItem } from "./copybookItem.interface.ts";
 
 export interface ITransaction {
-    from(data: string): void;
-
-    fromFile(path: string): void;
-
-    setCopybookPath(path: string): void;
-
-    getLayout(): ICopybookItem[];
+    getCopybookItems(): ICopybookItem[];
 
     getCopybookItem(name: string): ICopybookItem | undefined;
 
