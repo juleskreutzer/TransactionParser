@@ -1,3 +1,14 @@
+#### 0.1.6 (2026-01-21)
+
+##### New Features
+
+* **Transaction:**  Initial support for TransactionPackage ([99005710](https://github.com/juleskreutzer/TransactionParser/commit/9900571047051a5abce7e6c9fd395e9b14571ac2))
+* Track start and end of position of copybook item ([c6d20542](https://github.com/juleskreutzer/TransactionParser/commit/c6d20542b582e06398ccaec5716133ae34a8db21))
+
+##### Other Changes
+
+* **Transaction:**  Added initial interface for transaction support ([fbaa81f1](https://github.com/juleskreutzer/TransactionParser/commit/fbaa81f15735f146ee56a58d6c4a3ca065951ba3))
+
 #### 0.1.6 (2026-01-18)
 
 ##### Bug Fixes
