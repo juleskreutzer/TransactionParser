@@ -2,6 +2,8 @@ import type { picture } from "../type/picture.type.js";
 import { DataItem } from "../transaction/dataItem.js";
 import { readFile, checkPathExists } from "../util/index.js";
 import type { ICopybookItem } from "../interface/copybookItem.interface.ts";
+import type { usageType } from "../type/usage.type.ts";
+import type { IDataPosition } from "../interface/dataPosition.interface.ts";
 
 /**
  * @class
@@ -14,6 +16,7 @@ export class CopybookParser {
     private copybookPath: string
     private parsedCopybook: DataItem[];
     private totalLength: number = 0;
+    private totalByteLength: number = 0;
     
     constructor(copybookPath: string) {
         if (copybookPath === '') {
@@ -77,6 +80,7 @@ export class CopybookParser {
             const picMatch = remainingPart.match(/PIC\s+([^\s]+)/i)
             let picture: picture = 'group';
             let signed = false;
+            let usageType: usageType = 'display';
             let length = 0;
 
             if (picMatch) {
@@ -94,12 +98,20 @@ export class CopybookParser {
                         length = countX || 1;
                     }
                 } else {
+                    if (/ COMP/i.test(remainingPart) || / COMP/i.test(picToken)) usageType = 'comp';
+
                     // Check if packed field
                     if(/COMP-3/i.test(remainingPart) || /COMP-3/i.test(picToken)) {
                         picture = 'packed';
+                        usageType = 'comp-3';
                     } else {
                         picture = 'number';
                     }
+
+                    if (/COMP-1/i.test(remainingPart) || /COMP-1/i.test(picToken)) usageType = 'comp-1';
+                    if (/COMP-2/i.test(remainingPart) || /COMP-2/i.test(picToken)) usageType = 'comp-2';
+                    if (/COMP-4/i.test(remainingPart) || /COMP-4/i.test(picToken)) usageType = 'comp-4';
+                    if (/COMP-5/i.test(remainingPart) || /COMP-5/i.test(picToken)) usageType = 'comp-5';
 
                     let len = 0;
                     let regex = /9\((\d+)\)/g;
@@ -147,18 +159,27 @@ export class CopybookParser {
                 else value = valueMatch[1];
             }
 
-            const decimalsForItem = (picMatch && (picMatch as any).__decimals) ? (picMatch as any).__decimals : 0;
-            const dataItem: DataItem = new DataItem(level, name, picture, length, signed, occurs, undefined, undefined, value, decimalsForItem);
-            if (value !== undefined) dataItem.setValue(value);
+            // Calculate field length in bytes
+            let byteLength = this.calculateBytes(picture, usageType, length);
+            const dataPosition: IDataPosition = { offset: 0, byteLength: byteLength }
 
+            const decimalsForItem = (picMatch && (picMatch as any).__decimals) ? (picMatch as any).__decimals : 0;
+
+            let redefinesTarget: ICopybookItem | undefined = undefined;
             if (redefinesName) {                
                 const target = this.findItemByName(redefinesName, dataItems);
                 if (target) {
-                    dataItem.redefines = target
+                    redefinesTarget = target
+                    byteLength = redefinesTarget.dataPosition.byteLength; // Set byteLength to match the redefined field
+                    dataPosition.byteLength = byteLength;
                 } else {
-                    dataItem.redefines = { level: 0, name: redefinesName, picture: 'group', length: 0, signed: false } as DataItem
+                    redefinesTarget = { level: 0, name: redefinesName, picture: 'group', length: 0, signed: false } as DataItem
                 }
-            }
+            } 
+
+            const dataItem: DataItem = new DataItem(level, name, picture, length, signed, usageType, dataPosition, occurs, redefinesTarget, undefined, undefined, decimalsForItem);
+
+            if (value !== undefined) dataItem.setValue(value);
 
             // Build hierarchy
             while (stack.length && stack[stack.length - 1]!.level >= level) stack.pop();
@@ -173,8 +194,11 @@ export class CopybookParser {
             stack.push({ level: level, item: dataItem });
         }
 
+        this.setAbsoluteOffsets(dataItems);
+        this.copyOffsetsForRedefines(dataItems);
         this.parsedCopybook = this.handleOccurs(dataItems);
         this.calculatePositions(this.parsedCopybook);
+        this.calculateTotalByteLength(this.parsedCopybook);
         return this.parsedCopybook;
     }
 
@@ -233,6 +257,46 @@ export class CopybookParser {
     }
 
     /**
+     * Calculate the length in bytes for the current copybook item
+     * @param picture 
+     * @param usage 
+     * @param length 
+     * @returns bytes 
+     */
+    private calculateBytes(picture: picture, usage: usageType, length: number): number {
+        switch (usage) {
+            case 'display':
+                return length;
+            case 'comp':
+            case 'comp-4':
+                if (length <= 4) return 2;
+                if (length <= 9) return 4;
+                if (length <= 18) return 8;
+
+                throw new Error(`COMP field too large for parsing: S9(${length})`);
+            case 'comp-3':
+                // Packed decimal, so digits + sign
+                return Math.ceil((length + 1) / 2);
+            case 'comp-1':
+                return 4;
+            case 'comp-2':
+                return 8;
+            default:
+                throw new Error(`Unsupported picture and/or usage clause: PIC ${picture}(${length}) ${usage}`);
+        }
+    }
+
+    private calculateTotalByteLength(items: ICopybookItem[]) {
+        if (items.length === 0) {
+            this.totalByteLength = 0
+        } else if (items[items.length - 1] !== undefined && items[items.length - 1]!.children !== undefined) {
+            this.calculateTotalByteLength(items[items.length - 1]!.children!)
+        } else {
+            this.totalByteLength = items[items.length - 1]!.dataPosition.offset + items[items.length - 1]!.dataPosition.byteLength
+        }
+    }
+
+    /**
      * Expands DataItems with OCCURS clause
      * 
      * Recursively processes a list of DataItems, expanding any item with an OCCURS value
@@ -254,6 +318,7 @@ export class CopybookParser {
             const expandedItems: DataItem[] = [];
 
             for (let i = 1; i <= item.occurs; i++) {
+                const newDataPosition: IDataPosition = { offset: item.dataPosition.offset + (i * item.dataPosition.byteLength), byteLength: item.dataPosition.byteLength };
                 // Shallow clone base properties
                 const clone = new DataItem(
                     item.level,
@@ -261,6 +326,8 @@ export class CopybookParser {
                     item.picture,
                     item.length,
                     item.signed,
+                    item.usage,
+                    newDataPosition,
                     item.occurs,
                     undefined,
                     undefined,
@@ -273,7 +340,7 @@ export class CopybookParser {
                 // Deep clone children
                 if (item.children) {
                     clone.children = this.handleOccurs(
-                        item.children.map(child => this.cloneItem(child as DataItem))
+                        item.children.map(child => this.cloneItem(child as DataItem, i))
                     );
                 }
 
@@ -295,13 +362,16 @@ export class CopybookParser {
      * @param item {@link DataItem} to be cloned
      * @returns item Cloned {@link DataItem}
      */
-    private cloneItem(item: DataItem): DataItem {
+    private cloneItem(item: DataItem, occursCount: number): DataItem {
+        const newDataPosition: IDataPosition = { offset: item.dataPosition.offset + ((occursCount - 1) * item.dataPosition.byteLength), byteLength: item.dataPosition.byteLength };
         const clone = new DataItem(
             item.level,
             item.name,
             item.picture,
             item.length,
             item.signed,
+            item.usage,
+            newDataPosition,
             item.occurs,
             undefined,
             undefined,
@@ -312,10 +382,57 @@ export class CopybookParser {
         clone.redefines = item.redefines;
 
         if (item.children) {
-            clone.children = item.children.map(child => this.cloneItem(child as DataItem));
+            clone.children = item.children.map(child => this.cloneItem(child as DataItem, occursCount));
         }
 
         return clone;
+    }
+
+    /**
+     * Sets absolute offsets for all items sequentially
+     * @param items Array of DataItems
+     * @param currentOffset Starting offset
+     * @returns The next offset after processing
+     */
+    private setAbsoluteOffsets(items: DataItem[], currentOffset = 0): number {
+        for (const item of items) {
+            item.dataPosition.offset = currentOffset;
+            currentOffset += item.dataPosition.byteLength;
+            if (item.children) {
+                currentOffset = this.setAbsoluteOffsets(item.children as DataItem[], currentOffset);
+            }
+        }
+        return currentOffset;
+    }
+
+    /**
+     * Copies offsets from redefined targets to redefined items and their children
+     * @param items Array of DataItems
+     */
+    private copyOffsetsForRedefines(items: DataItem[]): void {
+        for (const item of items) {
+            if (item.redefines && item.redefines.dataPosition) {
+                this.copyOffsetsFromTarget(item, item.redefines);
+            }
+            if (item.children) {
+                this.copyOffsetsForRedefines(item.children as DataItem[]);
+            }
+        }
+    }
+
+    /**
+     * Copies offsets from the target to the redefined item and its children
+     * @param item The redefined DataItem
+     * @param target The target ICopybookItem
+     */
+    private copyOffsetsFromTarget(item: DataItem, target: ICopybookItem): void {
+        item.dataPosition.offset = target.dataPosition.offset;
+        if (item.children && target.children) {
+            for (let i = 0; i < item.children.length && i < target.children.length; i++) {
+                (item.children[i] as DataItem).dataPosition.offset = (target.children[i] as ICopybookItem).dataPosition.offset;
+                this.copyOffsetsFromTarget(item.children[i] as DataItem, target.children[i] as ICopybookItem);
+            }
+        }
     }
 
     private calculatePositions(dataItems: ICopybookItem[]): void {

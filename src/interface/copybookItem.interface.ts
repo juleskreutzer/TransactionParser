@@ -1,4 +1,6 @@
 import type { picture } from "../type/picture.type.js";
+import type { usageType } from "../type/usage.type.ts";
+import type { IDataPosition } from "./dataPosition.interface.ts";
 
 /**
  * @interface
@@ -25,6 +27,10 @@ export interface ICopybookItem {
 
     /** Indicator if the copybook item is signed */
     signed: boolean;
+
+    usage: usageType
+
+    dataPosition: IDataPosition;
 
     /** Amount of times this copybook item occurs, optional */
     occurs?: number | undefined;

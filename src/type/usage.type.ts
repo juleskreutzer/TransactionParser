@@ -1,0 +1,7 @@
+export type usageType = 'display' 
+    | 'comp'
+    | 'comp-1'
+    | 'comp-2'
+    | 'comp-3'
+    | 'comp-4'
+    | 'comp-5'

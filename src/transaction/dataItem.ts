@@ -1,5 +1,7 @@
 import type { ICopybookItem } from "../interface/copybookItem.interface.js";
+import type { IDataPosition } from "../interface/dataPosition.interface.ts";
 import type { picture } from "../type/picture.type.js";
+import type { usageType } from "../type/usage.type.ts";
 import { Formatter } from "./formatter.js";
 
 /**
@@ -16,13 +18,15 @@ export class DataItem implements ICopybookItem{
     start: number | undefined; // Will be set after initial creation in parser
     end: number | undefined; // Will be set after initial creation in parser
     signed: boolean;
+    usage: usageType = 'display';
+    dataPosition: IDataPosition
     decimals?: number;
     occurs?: number | undefined;
     redefines?: ICopybookItem | undefined;
     children?: ICopybookItem[] | undefined;
     value?: string | undefined;
 
-    constructor(level: number, name: string, picture: picture, length: number, signed: boolean = false, occurs?: number, redefines?: ICopybookItem, children?: ICopybookItem[], value?: any, decimals?: number) {
+    constructor(level: number, name: string, picture: picture, length: number, signed: boolean = false, usage: usageType = 'display', dataPosition: IDataPosition, occurs?: number, redefines?: ICopybookItem, children?: ICopybookItem[], value?: any, decimals?: number) {
         if (level < 1) {
             throw new Error(`Level should at least be 1`);
         }
@@ -38,9 +42,11 @@ export class DataItem implements ICopybookItem{
         this.level = level;
         this.name = name;
         this.picture = picture;
-        this.length = length
-        this.signed = signed
-        this.occurs = occurs
+        this.length = length;
+        this.signed = signed;
+        this.usage = usage;
+        this.dataPosition = dataPosition;
+        this.occurs = occurs;
         this.redefines = redefines;
         this.children = children;
         this.value = value;
@@ -62,9 +68,9 @@ export class DataItem implements ICopybookItem{
             return;
         }
 
-        // if (this.picture === 'group') {
-        //     throw new Error(`Cannot set value on a group item '${this.name}'`);
-        // }
+        if (this.picture === 'group') {
+            throw new Error(`Cannot set value on a group item '${this.name}'`);
+        }
 
         if (this.picture === 'string') {
             let s = String(val);
