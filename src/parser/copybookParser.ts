@@ -15,7 +15,6 @@ import type { IDataPosition } from "../interface/dataPosition.interface.ts";
 export class CopybookParser {
     private copybookPath: string
     private parsedCopybook: DataItem[];
-    private totalLength: number = 0;
     private totalByteLength: number = 0;
     
     constructor(copybookPath: string) {
@@ -64,7 +63,7 @@ export class CopybookParser {
             let line = l.replace(/\./g, '').trim();
             if (line === '') continue;
 
-            const header = line.match(/^\s*(\d{1,2})\s+([A-Z0-9-]+)\s*(.*)$/i);
+            const header = line.match(/^.{6}\s*(\d{1,2})\s+([A-Z0-9-]+)\s*(.*)$/i);
             
             if (!header) continue;
 
@@ -197,7 +196,6 @@ export class CopybookParser {
         this.setAbsoluteOffsets(dataItems);
         this.copyOffsetsForRedefines(dataItems);
         this.parsedCopybook = this.handleOccurs(dataItems);
-        this.calculatePositions(this.parsedCopybook);
         this.calculateTotalByteLength(this.parsedCopybook);
         return this.parsedCopybook;
     }
@@ -215,6 +213,7 @@ export class CopybookParser {
             checkPathExists(copybookPath);
             this.copybookPath = copybookPath;
             this.parsedCopybook = [];
+            this.totalByteLength = 0;
         }
     }
 
@@ -238,6 +237,10 @@ export class CopybookParser {
      */
     toJson(): string {
         return JSON.stringify(this.parsedCopybook);
+    }
+
+    getTotalByteLength(): number {
+        return this.totalByteLength;
     }
 
     /**
@@ -286,6 +289,10 @@ export class CopybookParser {
         }
     }
 
+    /**
+     * Calculates the total byte length for the current copybook
+     * @param items 
+     */
     private calculateTotalByteLength(items: ICopybookItem[]) {
         if (items.length === 0) {
             this.totalByteLength = 0
@@ -431,26 +438,6 @@ export class CopybookParser {
             for (let i = 0; i < item.children.length && i < target.children.length; i++) {
                 (item.children[i] as DataItem).dataPosition.offset = (target.children[i] as ICopybookItem).dataPosition.offset;
                 this.copyOffsetsFromTarget(item.children[i] as DataItem, target.children[i] as ICopybookItem);
-            }
-        }
-    }
-
-    private calculatePositions(dataItems: ICopybookItem[]): void {
-        for(let item of dataItems) {
-            if (item.redefines) {
-                continue;
-            }
-
-            if (item.children && item.children.length > 0) {
-                this.calculatePositions(item.children);
-            } else {
-                const start = this.totalLength;
-                const end = this.totalLength + item.length;
-
-                item.start = start;
-                item.end = end;
-
-                this.totalLength += item.length;
             }
         }
     }
