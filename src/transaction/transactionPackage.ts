@@ -23,25 +23,19 @@ export class TransactionPackage implements ITransactionPackage {
         this.transactions = transactions === undefined || transactions.length === 0 ? [] : transactions;
     }
 
-    /**
-     * Load transactions from a data string.
-     * 
-     * @remark
-     * Line endings will be used to split data and will create a new transaction
-     * @param data string representation of the data
-     */
-    load(data: string): void {
-        if (data === '') throw new Error('No transaction data provided');
+    load(data: Buffer): void {
+        if (data.length === 0) throw new Error('No transaction data provided');
 
-        const lines = data
-            .split(/\r?\n/)
-            .map(l => l.replace(/\t/g, ' ').trim())
-            .filter(l => l.length > 0 && !/^\s*\*/.test(l));
+        // const lines = data
+        //     .split(/\r?\n/)
+        //     .map(l => l.replace(/\t/g, ' ').trim())
+        //     .filter(l => l.length > 0 && !/^\s*\*/.test(l));
 
-        lines.forEach((line: string) => {
-            const transaction: ITransaction = new Transaction(this.copybookPath, line);
-            this.transactions.push(transaction);
-        })
+        // lines.forEach((line: string) => {
+        //     const transaction: ITransaction = new Transaction(this.copybookPath, line);
+        //     this.transactions.push(transaction);
+        // })
+        throw new Error('Method not yet implemented');
     }
 
     /**
@@ -53,7 +47,8 @@ export class TransactionPackage implements ITransactionPackage {
     loadFile(path: string): void {
         checkPathExists(path);
 
-        this.load(readFile(path));
+        throw new Error('Method not yet implemented');
+        // this.load(readFile(path));
     }
 
     /**

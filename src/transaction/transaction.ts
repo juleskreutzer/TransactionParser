@@ -3,6 +3,8 @@ import type { ITransaction } from "../interface/transaction.interface.ts";
 import { CopybookParser } from "../parser/copybookParser.ts";
 import { checkPathExists, readFile } from "../util/index.ts";
 
+import { Iconv } from 'iconv';
+
 /**
  * @experimental
  * @class
@@ -14,19 +16,85 @@ import { checkPathExists, readFile } from "../util/index.ts";
 export class Transaction implements ITransaction {
     private dataItems: ICopybookItem[] = [];
     private parser: CopybookParser;
+    private rawData: Buffer | undefined
 
-    constructor(copybookPath: string, transactionData?: string) {
+    constructor(copybookPath: string, transactionData?: Buffer) {
         // Check if copybook path exists
         checkPathExists(copybookPath);
 
+        // Parse copybook to create dataItems
         this.parser = new CopybookParser(copybookPath);
         this.dataItems = this.parser.parse();
 
+        // If transactionData is provide, parse it into the dataItems
         if (transactionData && transactionData.length > 0) {
-            
+            this.rawData = transactionData;
+            this.processTransactionData(transactionData, this.dataItems);
+        }
+    }
+
+    private processTransactionData(data: Buffer, items: ICopybookItem[]): void {
+        if (data.length <= 0) {
+            return
         }
 
+        items.forEach(item => {
+            if (item.picture === 'group') {
+                if (item.children && item.children.length > 0) {
+                    this.processTransactionData(data, item.children);
+                } else {
+                    throw new Error(`Unable to process '${item.name}' since it is a group field without children`);
+                }
+            }
+
+            switch(item.picture) {
+                case 'string':
+                    const bufferPart = data.subarray(item.dataPosition.offset, item.dataPosition.byteLength);
+                    const iconv = new Iconv('cp856', 'UTF8')
+                    const convertedBuffer = iconv.convert(bufferPart);
+                    const valueString: string = convertedBuffer.toString();
+                    item.setValue(valueString);
+                    break;
+                case 'number':
+                    break;
+                case 'packed':
+                    break;
+                default:
+                    throw new Error(`PIC clause '${item.picture}' for item '${item.name}' cannot be processed`);
+            }
+        })
+        
     }
+    /**
+     * Recursively process private property `rawData` using the `dataItems` that have been created when parsing the copybook
+     * @param items 
+     * @throws Throws an error when `rawData` is undefined, when `DataItem.start` is unknown or when an unsupported picture clause is used
+     */
+    // private processTransactionData(items: ICopybookItem[]): void {
+    //     if (this.rawData === undefined) { throw new Error('No data to process'); }
+    //     items.forEach(item => {
+    //         if (item.children && item.children.length > 0) {
+    //             this.processTransactionData(item.children);
+    //         }
+
+    //         if (item.start === undefined) { throw new Error(`Unable to determine start position of item '${item.name}' since property is empty`); }
+
+    //         let value = '';
+    //         switch(item.picture) {
+    //             case 'string':
+    //                 const valueAsBuffer = this.rawData!.slice(item.start, item.start + item.length);
+    //                 const iconv = new Iconv('EBCDIC-US', 'UTF8');
+    //                 const value = iconv.convert(valueAsBuffer);
+    //             case 'number':
+    //             case 'packed':
+    //                 throw new Error('Processing of packed fields is currently not supported');
+    //             case 'group':
+    //                 throw new Error('Processing of group field is currently not supported');
+    //             default:
+    //                 throw new Error(`Picture clause '${item.picture}' is currently not supported when reading transaction data`);
+    //         }
+    //     })
+    // }
 
     /**
      * Update the copybook path used for this transaction
