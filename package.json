@@ -41,7 +41,7 @@
     "@types/node": "^25.0.7",
     "generate-changelog": "^1.8.0",
     "mocha": "^11.7.5",
+    "typedoc": "^0.28.16",
     "typescript": "^5.9.3"
-  },
-  "dependencies": {}
+  }
 }
