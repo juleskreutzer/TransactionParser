@@ -28,3 +28,6 @@ coverage/
 # Exclude OS files
 .DS_Store
 Thumbs.db
+
+# Exclude documentation folder
+docs/

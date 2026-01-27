@@ -25,7 +25,7 @@ export function readFile(path: string): string {
 /**
  * Read a file into buffer instead of string
  * 
- * @remark
+ * @remarks
  * If the file contains multiple lines, it will be returned as **one** buffer.
  * 
  * Hex `15` / Decimal `21` (new line) will not be taken into account. Use {@link splitBufferOnNewLine} for this
@@ -41,7 +41,7 @@ export function readFileAsBuffer(path: string): Buffer {
 /**
  * Splits buffer on new line control character (hex 15/dec 21)
  * 
- * @remark
+ * @remarks
  * This function will split the buffer on every occurance of the new line character
  * If `x'15'` is present in the data, buffer will be incorrectly split
  * 

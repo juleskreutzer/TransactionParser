@@ -24,7 +24,7 @@ parser.updateCopybookPath('/path/to/another/copybook');
 
 ### Example
 The following copybook:
-```cobol
+```
        01 CUSTOMER-RECORD.
           05 CUSTOMER-NAME.
              10 FIRST-NAME             PIC X(15).
