@@ -3,8 +3,6 @@ import type { ITransaction } from "../interface/transaction.interface.ts";
 import { CopybookParser } from "../parser/copybookParser.ts";
 import { checkPathExists, readFile } from "../util/index.ts";
 
-import { Iconv } from 'iconv';
-
 /**
  * @experimental
  * @class
@@ -49,11 +47,11 @@ export class Transaction implements ITransaction {
 
             switch(item.picture) {
                 case 'string':
-                    const bufferPart = data.subarray(item.dataPosition.offset, item.dataPosition.byteLength);
-                    const iconv = new Iconv('cp856', 'UTF8')
-                    const convertedBuffer = iconv.convert(bufferPart);
-                    const valueString: string = convertedBuffer.toString();
-                    item.setValue(valueString);
+                    // const bufferPart = data.subarray(item.dataPosition.offset, item.dataPosition.byteLength);
+                    // const iconv = new Iconv('cp856', 'UTF8')
+                    // const convertedBuffer = iconv.convert(bufferPart);
+                    // const valueString: string = convertedBuffer.toString();
+                    // item.setValue(valueString);
                     break;
                 case 'number':
                     break;
@@ -99,7 +97,7 @@ export class Transaction implements ITransaction {
     /**
      * Update the copybook path used for this transaction
      * 
-     * @remark
+     * @remarks
      * This will clear the current data items that have been parsed using 
      * the previous copybook path and the copybook is parsed again
      * @param path Path to the copybook
@@ -124,7 +122,7 @@ export class Transaction implements ITransaction {
     /**
      * Get a specific copybook item based on the name of the item
      * 
-     * @remark
+     * @remarks
      * It is possible that due to an occurs class, mutliple data items with the same name exist.
      * Only the first occurance will be returned. Using the name of the group field might be better
      * @param name Name of the copybook item 

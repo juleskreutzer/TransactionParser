@@ -36,7 +36,6 @@ export class CopybookParser {
      * - Tabs will be replaced with spaces, all lines will be trimmed
      * - Skips blank lines or comment lines starting with `*`
      * 
-     * @remarks
      * If the copybook contains an `OCCURS` clause, the processed dataItem will be replaced by `n` dataItems. They will be identified by the {@link DataItem.name} property
      * like `NAME-n`
      * 
@@ -203,7 +202,8 @@ export class CopybookParser {
     /**
      * Updates copybook path
      * 
-     * @remark This will erased any previously parsed copybook data
+     * @remarks
+     * This will erased any previously parsed copybook data
      * @param copybookPath
      */
     updateCopybookPath(copybookPath: string): void {
@@ -220,7 +220,7 @@ export class CopybookParser {
     /**
      * Gets parsed copybook
      * 
-     * @remark
+     * @remarks
      * Return value will be empty if the {@link CopybookParser.parse | parse()} function has not yet been executed
      * @returns List of {@link DataItem}'s representing the previously parsed copybook 
      */
@@ -231,7 +231,7 @@ export class CopybookParser {
     /**
      * Convert the parsed copybook to a JSON string
      * 
-     * @remark
+     * @remarks
      * Return value will be an empty JSON array if the {@link CopybookParser.parse | parse()} function has not yet been executed
      * @returns string JSON object representing the copybook as string
      */

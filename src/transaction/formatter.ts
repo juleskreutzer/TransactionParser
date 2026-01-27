@@ -24,8 +24,11 @@ export class Formatter {
     /**
      * Format a numeric value into a fixed-width digit string based on total `length` and implied `decimal`
      * 
-     * @remark The returned string contains only digits and no decimal point.
-     * @remark If `signed` is true in the {@link opts} and value is negative, the returned string will be prefixed with `-`. The sign character is **not** counted towards `length`
+     * @remarks
+     * The returned string contains only digits and no decimal point.
+     * 
+     * If `signed` is true in the {@link INumericFormatOptions | opts} and value is negative, the returned string will be prefixed with `-`. The sign character is **not** counted towards `length`
+     * 
      * @param value [number|string] The value to format
      * @param length [number] Length of the field
      * @param opts [INumericFormatOptions] Optional formatting options
