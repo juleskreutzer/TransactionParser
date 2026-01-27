@@ -10,9 +10,6 @@ node_modules/
 # Exclude TypeScript config
 tsconfig.json
 
-# Exclude GitHub specific files
-.github/
-
 # Exclude build artifacts not needed
 *.tgz
 *.log
