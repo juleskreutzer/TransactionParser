@@ -62,7 +62,10 @@ export class CopybookParser {
             let line = l.replace(/\./g, '').trim();
             if (line === '') continue;
 
-            const header = line.match(/^.{6}\s*(\d{1,2})\s+([A-Z0-9-]+)\s*(.*)$/i);
+            // Remove leading line number if present (e.g., "   1 01 CUSTOMER-RECORD" -> "01 CUSTOMER-RECORD")
+            line = line.replace(/^\s*\d+\s+(\d{1,2}\s+)/, '$1');
+
+            const header = line.match(/^\s*(\d{1,2})\s+([A-Z0-9-]+)\s*(.*)$/i);
             
             if (!header) continue;
 
