@@ -2,7 +2,9 @@
 
 [![Node.js Package](https://github.com/juleskreutzer/TransactionParser/actions/workflows/npm-publish.yml/badge.svg)](https://github.com/juleskreutzer/TransactionParser/actions/workflows/npm-publish.yml)
 
-Parse files containing transaction data using COBOL copybooks into a TypeScript object
+Parse files containing transaction data using COBOL copybooks into a TypeScript object.
+
+Documentation is published on [Github Pages](https://juleskreutzer.github.io/TransactionParser/).
 
 ## Parse copybooks
 This package supports parsing a copybook into a TypeScript object.
@@ -39,6 +41,11 @@ Will be parsed and represented as a JSON object:
     "picture": "group",
     "length": 0,
     "signed": false,
+    "usage": "display",
+    "dataPosition": {
+      "offset": 0,
+      "byteLength": 0
+    },
     "decimals": 0,
     "children": [
       {
@@ -47,6 +54,11 @@ Will be parsed and represented as a JSON object:
         "picture": "group",
         "length": 0,
         "signed": false,
+        "usage": "display",
+        "dataPosition": {
+          "offset": 0,
+          "byteLength": 0
+        },
         "decimals": 0,
         "children": [
           {
@@ -55,6 +67,11 @@ Will be parsed and represented as a JSON object:
             "picture": "string",
             "length": 15,
             "signed": false,
+            "usage": "display",
+            "dataPosition": {
+              "offset": 0,
+              "byteLength": 15
+            },
             "decimals": 0
           }
         ]
