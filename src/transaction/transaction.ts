@@ -1,7 +1,7 @@
-import type { ICopybookItem } from "../interface/copybookItem.interface.ts";
-import type { ITransaction } from "../interface/transaction.interface.ts";
-import { CopybookParser } from "../parser/copybookParser.ts";
-import { checkPathExists, readFile } from "../util/index.ts";
+import type { ICopybookItem } from "../interface/copybookItem.interface.js";
+import type { ITransaction } from "../interface/transaction.interface.js";
+import { cp037 } from "../lookupTable/cp037.js";
+import { checkPathExists } from "../util/index.js";
 
 /**
  * @experimental
@@ -13,16 +13,14 @@ import { checkPathExists, readFile } from "../util/index.ts";
  */
 export class Transaction implements ITransaction {
     private dataItems: ICopybookItem[] = [];
-    private parser: CopybookParser;
     private rawData: Buffer | undefined
 
-    constructor(copybookPath: string, transactionData?: Buffer) {
+    constructor(copybookPath: string, dataItem: ICopybookItem[], transactionData?: Buffer) {
         // Check if copybook path exists
         checkPathExists(copybookPath);
 
         // Parse copybook to create dataItems
-        this.parser = new CopybookParser(copybookPath);
-        this.dataItems = this.parser.parse();
+        this.dataItems = dataItem
 
         // If transactionData is provide, parse it into the dataItems
         if (transactionData && transactionData.length > 0) {
@@ -44,71 +42,114 @@ export class Transaction implements ITransaction {
                     throw new Error(`Unable to process '${item.name}' since it is a group field without children`);
                 }
             }
+            
+            let subData: Buffer;
+            let value: string = '';
 
             switch(item.picture) {
                 case 'string':
-                    // const bufferPart = data.subarray(item.dataPosition.offset, item.dataPosition.byteLength);
-                    // const iconv = new Iconv('cp856', 'UTF8')
-                    // const convertedBuffer = iconv.convert(bufferPart);
-                    // const valueString: string = convertedBuffer.toString();
-                    // item.setValue(valueString);
+                    subData = data.subarray(item.dataPosition.offset, item.dataPosition.offset + item.dataPosition.byteLength);
+                    subData.forEach(byte => {
+                        value += cp037.find(v => v.dec === byte)?.char || '';
+                    })
+                    item.setValue(value);
+                    value = '';
                     break;
                 case 'number':
+                    switch (item.usage) {
+                        case 'display':
+                            // Regular lookup just as with string
+                            subData = data.subarray(item.dataPosition.offset, item.dataPosition.offset + item.dataPosition.byteLength);
+                            subData.forEach(byte => {
+                                value += cp037.find(v => v.dec === byte)?.char || '';
+                            });
+                            item.setValue(value);
+                            value = '';
+                            break;
+                        case 'comp':
+                        case 'comp-4':
+                        case 'comp-5':
+                            // COMP fields are binary integers (big-endian)
+                            subData = data.subarray(item.dataPosition.offset, item.dataPosition.offset + item.dataPosition.byteLength);
+                            if (item.dataPosition.byteLength === 2) {
+                                value = item.signed ? subData.readInt16BE(0).toString() : subData.readUInt16BE(0).toString();
+                            } else if (item.dataPosition.byteLength === 4) {
+                                value = item.signed ? subData.readInt32BE(0).toString() : subData.readUInt32BE(0).toString();
+                            } else if (item.dataPosition.byteLength === 8) {
+                                value = item.signed ? subData.readBigInt64BE(0).toString() : subData.readBigUInt64BE(0).toString();
+                            } else {
+                                throw new Error(`Unsupported COMP field byte length (${item.dataPosition.byteLength}) for item '${item.name}'`);
+                            }
+                            item.setValue(value);
+                            value = '';
+                            break;
+                        case 'comp-1':
+                            // COMP-1 is single-precision floating point (4 bytes)
+                            subData = data.subarray(item.dataPosition.offset, item.dataPosition.offset + item.dataPosition.byteLength);
+                            value = subData.readFloatBE(0).toString();
+                            item.setValue(value);
+                            value = '';
+                            break;
+                        case 'comp-2':
+                            // COMP-2 is double-precision floating point (8 bytes)
+                            subData = data.subarray(item.dataPosition.offset, item.dataPosition.offset + item.dataPosition.byteLength);
+                            value = subData.readDoubleBE(0).toString();
+                            item.setValue(value);
+                            value = '';
+                            break;
+                        case 'comp-3':
+                            // COMP-3 is packed decimal
+                            subData = data.subarray(item.dataPosition.offset, item.dataPosition.offset + item.dataPosition.byteLength);
+                            value = this.unpackDecimal(subData);
+                            item.setValue(value);
+                            value = '';
+                            break;
+                        default:
+                            throw new Error(`Usage type '${item.usage}' for item '${item.name}' cannot be processed`);
+                    }
                     break;
                 case 'packed':
+                    break;
+                case 'group':
+                    // Intentionally left blank since groups are processed recursively
                     break;
                 default:
                     throw new Error(`PIC clause '${item.picture}' for item '${item.name}' cannot be processed`);
             }
-        })
-        
+        });
     }
-    /**
-     * Recursively process private property `rawData` using the `dataItems` that have been created when parsing the copybook
-     * @param items 
-     * @throws Throws an error when `rawData` is undefined, when `DataItem.start` is unknown or when an unsupported picture clause is used
-     */
-    // private processTransactionData(items: ICopybookItem[]): void {
-    //     if (this.rawData === undefined) { throw new Error('No data to process'); }
-    //     items.forEach(item => {
-    //         if (item.children && item.children.length > 0) {
-    //             this.processTransactionData(item.children);
-    //         }
-
-    //         if (item.start === undefined) { throw new Error(`Unable to determine start position of item '${item.name}' since property is empty`); }
-
-    //         let value = '';
-    //         switch(item.picture) {
-    //             case 'string':
-    //                 const valueAsBuffer = this.rawData!.slice(item.start, item.start + item.length);
-    //                 const iconv = new Iconv('EBCDIC-US', 'UTF8');
-    //                 const value = iconv.convert(valueAsBuffer);
-    //             case 'number':
-    //             case 'packed':
-    //                 throw new Error('Processing of packed fields is currently not supported');
-    //             case 'group':
-    //                 throw new Error('Processing of group field is currently not supported');
-    //             default:
-    //                 throw new Error(`Picture clause '${item.picture}' is currently not supported when reading transaction data`);
-    //         }
-    //     })
-    // }
 
     /**
-     * Update the copybook path used for this transaction
-     * 
-     * @remarks
-     * This will clear the current data items that have been parsed using 
-     * the previous copybook path and the copybook is parsed again
-     * @param path Path to the copybook
-     * @throws Throws an error if the copybook path doesn't exist, or when an error occurs during parsing
+     * Unpacks a packed decimal (COMP-3) field
+     * @param buffer Buffer containing the packed decimal data
+     * @returns String representation of the decimal value
      */
-    setCopybookPath(path: string): void {
-        checkPathExists(path);
-
-        this.dataItems = [];
-        this.parser.updateCopybookPath(path);
-        this.parser.parse();
+    private unpackDecimal(buffer: Buffer): string {
+        let result = '';
+        
+        // Process all bytes except the last
+        for (let i = 0; i < buffer.length - 1; i++) {
+            const byte = buffer[i];
+            if (byte === undefined) throw new Error(`Unable to unpack value from buffer: '${buffer.toString('hex')}'`)
+            const highNibble = (byte >> 4) & 0x0F;
+            const lowNibble = byte & 0x0F;
+            result += highNibble.toString() + lowNibble.toString();
+        }
+        
+        // Process the last byte (contains one digit and the sign)
+        const lastByte = buffer[buffer.length - 1];
+        if (lastByte === undefined) throw new Error(`Unable to unpack last byte from buffer: '${buffer.toString('hex')}'`);
+        const digit = (lastByte >> 4) & 0x0F;
+        const sign = lastByte & 0x0F;
+        
+        result += digit.toString();
+        
+        // Sign nibble: 0x0C or 0x0F = positive, 0x0D = negative
+        if (sign === 0x0D) {
+            result = '-' + result;
+        }
+        
+        return result;
     }
 
     /**
@@ -167,6 +208,16 @@ export class Transaction implements ITransaction {
     
     toString(): string {
         throw new Error("Method not implemented.");
+    }
+
+    /**
+     * Get a JSON representatation of the current transaction
+     *
+     * @return {*}  {string}
+     * @memberof Transaction
+     */
+    toJson(): string {
+        return JSON.stringify(this.dataItems);
     }
     
 }

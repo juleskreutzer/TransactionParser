@@ -1,5 +1,6 @@
 import { Transaction } from "./transaction.js";
-import { checkPathExists, readFile } from "../util/index.js";
+import { CopybookParser } from "../parser/copybookParser.js";
+import { checkPathExists, readFile, readFileAsBuffer, splitBuffer } from "../util/index.js";
 import type { ITransactionPackage } from "../interface/transactionPackage.interface.ts";
 import type { ITransaction } from "../interface/transaction.interface.ts";
 
@@ -12,6 +13,7 @@ import type { ITransaction } from "../interface/transaction.interface.ts";
 export class TransactionPackage implements ITransactionPackage {
     transactions: ITransaction[];
     private copybookPath: string;
+    private parser: CopybookParser;
     
     constructor(copybookPath: string, transactions?: ITransaction[]) {
         if (copybookPath === '') throw new Error(`Please provide a copybook path`);
@@ -20,22 +22,28 @@ export class TransactionPackage implements ITransactionPackage {
         checkPathExists(copybookPath);
 
         this.copybookPath = copybookPath;
+        this.parser = new CopybookParser(copybookPath);
+        this.parser.parse();
         this.transactions = transactions === undefined || transactions.length === 0 ? [] : transactions;
     }
 
+    /**
+     * Load transaction(s) from a buffer
+     * 
+     * @remarks
+     * The buffer can represent multiple transactions.
+     * Based on the length of the copybook, the buffer will be split
+     *
+     * @param {Buffer} data Transaction data
+     */
     load(data: Buffer): void {
         if (data.length === 0) throw new Error('No transaction data provided');
 
-        // const lines = data
-        //     .split(/\r?\n/)
-        //     .map(l => l.replace(/\t/g, ' ').trim())
-        //     .filter(l => l.length > 0 && !/^\s*\*/.test(l));
+        const buffers = splitBuffer(data, this.parser.getTotalByteLength());
 
-        // lines.forEach((line: string) => {
-        //     const transaction: ITransaction = new Transaction(this.copybookPath, line);
-        //     this.transactions.push(transaction);
-        // })
-        throw new Error('Method not yet implemented');
+        buffers.forEach(buf => {
+            this.transactions.push(new Transaction(this.copybookPath, this.parser.getParsedCopybook(), buf));
+        })
     }
 
     /**
@@ -47,8 +55,7 @@ export class TransactionPackage implements ITransactionPackage {
     loadFile(path: string): void {
         checkPathExists(path);
 
-        throw new Error('Method not yet implemented');
-        // this.load(readFile(path));
+        this.load(readFileAsBuffer(path));
     }
 
     /**
@@ -90,7 +97,7 @@ export class TransactionPackage implements ITransactionPackage {
      * Create a new empty transaction in this package.
      */
     createEmptyTransaction(): void {
-        this.transactions.push(new Transaction(this.copybookPath));
+        this.transactions.push(new Transaction(this.copybookPath, this.parser.getParsedCopybook()));
     }
 
 }

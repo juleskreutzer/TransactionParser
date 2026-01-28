@@ -1,9 +1,9 @@
 import type { picture } from "../type/picture.type.js";
 import { DataItem } from "../transaction/dataItem.js";
 import { readFile, checkPathExists } from "../util/index.js";
-import type { ICopybookItem } from "../interface/copybookItem.interface.ts";
-import type { usageType } from "../type/usage.type.ts";
-import type { IDataPosition } from "../interface/dataPosition.interface.ts";
+import type { ICopybookItem } from "../interface/copybookItem.interface.js";
+import type { usageType } from "../type/usage.type.js";
+import type { IDataPosition } from "../interface/dataPosition.interface.js";
 
 /**
  * @class
