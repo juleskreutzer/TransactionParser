@@ -40,7 +40,7 @@ describe('CopybookParser', () => {
       const mdunam = findItemByName('MDUNAM-XW1', generic);
       assert(mdunam, 'MDUNAM-XW1 should be present');
       assert.strictEqual(mdunam.picture, 'group', 'MDUNAM-XW1 should be a group (no PIC)');
-      assert.strictEqual(mdunam.value, 'DABPA11N', "MDUNAM-XW1 should have value 'DABPA11N'");
+      assert.strictEqual(mdunam.value, undefined, 'MDUNAM-XW1 value should not be set (group items do not store values)');
 
       const filler = findItemByName('FILLER', generic);
       assert(filler, 'FILLER should be present');
@@ -51,7 +51,7 @@ describe('CopybookParser', () => {
       assert(cri, 'CRI-BW5 should be present');
       assert.strictEqual(cri.picture, 'number', 'CRI-BW5 should be a number');
       assert.strictEqual(cri.signed, true, 'CRI-BW5 should be signed');
-      assert.strictEqual(cri.value, 0, 'CRI-BW5 should have value 0');
+      assert.strictEqual(cri.value, '00', 'CRI-BW5 should have value "00" (stored as zero-padded string)');
       assert.strictEqual(cri.length, 2, 'CRI-BW5 should have length 2');
     });
   });

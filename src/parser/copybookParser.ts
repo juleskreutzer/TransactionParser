@@ -190,7 +190,7 @@ export class CopybookParser {
 
             const dataItem: DataItem = new DataItem(level, name, picture, length, signed, usageType, dataPosition, occurs, redefinesTarget, undefined, undefined, decimalsForItem);
 
-            if (value !== undefined) dataItem.setValue(value);
+            if (value !== undefined && picture !== 'group') dataItem.setValue(value);
 
             // Build hierarchy
             while (stack.length && stack[stack.length - 1]!.level >= level) stack.pop();
