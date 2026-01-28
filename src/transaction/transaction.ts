@@ -13,7 +13,6 @@ import { checkPathExists } from "../util/index.js";
  */
 export class Transaction implements ITransaction {
     private dataItems: ICopybookItem[] = [];
-    private rawData: Buffer | undefined
 
     constructor(copybookPath: string, dataItem: ICopybookItem[], transactionData?: Buffer) {
         // Check if copybook path exists
@@ -24,7 +23,6 @@ export class Transaction implements ITransaction {
 
         // If transactionData is provide, parse it into the dataItems
         if (transactionData && transactionData.length > 0) {
-            this.rawData = transactionData;
             this.processTransactionData(transactionData, this.dataItems);
         }
     }
@@ -177,7 +175,7 @@ export class Transaction implements ITransaction {
      * Get the value of a specific copybook item using the name of the copybook item
      *
      * @param name 
-     * @returns value Returns the string representatation of the copybook item's value, or undefined if it is not set
+     * @returns value Returns the string representation of the copybook item's value, or undefined if it is not set
      * @throws Throws an error if a copybook item couldn't be found based on the provided name
      */
     getValue(name: string): string | undefined {
@@ -193,7 +191,7 @@ export class Transaction implements ITransaction {
     /**
      * Set the value of a copybook item based on the name of the item
      * @param name Name of the copybook item
-     * @param value String representatation of the value for the copybook item
+     * @param value String representation of the value for the copybook item
      * @throws Throws an error if a copybook item couldn't be found based on the provided name
      */
     setValue(name: string, value: string): void {
@@ -211,10 +209,9 @@ export class Transaction implements ITransaction {
     }
 
     /**
-     * Get a JSON representatation of the current transaction
+     * Get a JSON representation of the current transaction
      *
      * @return {*}  {string}
-     * @memberof Transaction
      */
     toJson(): string {
         return JSON.stringify(this.dataItems);

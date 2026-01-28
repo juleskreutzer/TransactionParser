@@ -1,6 +1,33 @@
 // based on https://www.lookuptables.com/text/ebcdic
 import type { ILookupTable } from "../interface/lookupTableInterface.ts";
 
+/**
+ * Constant that can be used for lookup during conversion from EBCDIC
+ * 
+ * @remarks
+ * When reading a transaction file, the data is read into a buffer. Due to the usage
+ * of the EBCDIC (CP037) on mainframe, text characters need to be converted.
+ * 
+ * When parsing a transaction file, data is read into a buffer and for text fields, this lookup table can be used
+ * 
+ * @example
+ * Consider the following data in a transaction file:
+ * `HSTK`
+ * This is represented in HEX as:
+ * `C8 E2 E3 D2`
+ * Or in decimal as:
+ * `200 226 227 210`
+ * 
+ * When parsing the data, the decimal values are used
+ * ```typescript
+ * const buffer = new Buffer([200, 226, 227, 210]);
+ * let value = '';
+ * buffer.forEach(byte => {
+ *  value += cp037.find(v => v.dec === byte)?.char || ''; // Lookup value in cp037
+ * });
+ * console.log(value); // Prints: HSTK
+ * ```
+ */
 export const cp037: ILookupTable[] = [
     { hex: '00', dec: 0, char: 'NUL', desc: 'CONTROL CHAR - Null' },
     { hex: '01', dec: 1, char: 'SOH', desc: 'CONTROL CHAR - Start Of Heading' },

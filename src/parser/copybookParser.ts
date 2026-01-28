@@ -11,6 +11,16 @@ import type { IDataPosition } from "../interface/dataPosition.interface.js";
  * 
  * Together with the {@link Transaction} and {@link TransactionPackage} class, it can be used to load transaction data from a file, parse it into
  * {@link DataItem} objects, alter the value and store the (modified) transaction
+ * 
+ * @example
+ * Parse a copybook:
+ * ```ts
+ * const parser = new CopybookParser('/path/to/copybook'); // Supports any extension
+ * parser.parse(); // Load copybook as object
+ *
+ * parser.getParsedCopybook(); // Retrieve copybook as object, also returned by the parse() function
+ * parser.toJson(); // Retrieve copybook as JSON string
+ * ```
  */
 export class CopybookParser {
     private copybookPath: string

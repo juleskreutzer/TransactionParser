@@ -9,11 +9,20 @@ import type { ITransaction } from "../interface/transaction.interface.ts";
  * @class
  * 
  * The TransactionPackage class represents a transaction file that can contain multiple transactions.
+ * 
+ * @example
+ * Create a new Transaction Package and load data from a (binary) file:
+ * ```typescript
+ * const tp: TransactionPackage = new TransactionPackage('path/to/copybook'); // Creates new (empty) transaction package
+ * tp.loadFile('path/to/data/file'); // Load file and create transactions
+ * 
+ * console.log(tp.transactions); // Logs all transaction in package
+ * ```
  */
 export class TransactionPackage implements ITransactionPackage {
     transactions: ITransaction[];
     private copybookPath: string;
-    private parser: CopybookParser;
+    readonly parser: CopybookParser;
     
     constructor(copybookPath: string, transactions?: ITransaction[]) {
         if (copybookPath === '') throw new Error(`Please provide a copybook path`);

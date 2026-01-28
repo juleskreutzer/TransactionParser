@@ -146,3 +146,6 @@ company_test_files/*
 
 # Documentation folder
 docs/
+
+.github/*
+!.github/workflows/

@@ -15,8 +15,6 @@ export class DataItem implements ICopybookItem{
     name: string;
     picture: picture;
     length: number;
-    start: number | undefined; // Will be set after initial creation in parser
-    end: number | undefined; // Will be set after initial creation in parser
     signed: boolean;
     usage: usageType = 'display';
     dataPosition: IDataPosition
@@ -54,6 +52,8 @@ export class DataItem implements ICopybookItem{
     }
 
     /**
+     * @experimental
+     * 
      * Set the value for this {@link DataItem} taking `picture` and `length` into account.
      * - For `string` pictures the value is converted to string, truncated or padded with spaces to `length`.
      * - For `number` and `packed` pictures the value is coerced to a Number and validated against `length` (total digits). Throws when value is not numeric or exceeds the defined length.
@@ -106,7 +106,13 @@ export class DataItem implements ICopybookItem{
         this.value = val;
     }
 
+    toBuffer(): Buffer {
+        throw new Error('Method not yet implemented');
+    }
+
     /**
+     * @experimental
+     * 
      * Format the {@link DataItem} value as a COBOL-style fixed-width string using formatter helpers.
      * 
      * @returns string String representation of the value for the current instance

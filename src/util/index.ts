@@ -73,16 +73,6 @@ export function splitBufferOnNewLine(buffer: Buffer): Buffer[] {
 }
 
 /**
- * Split a buffer based on the length of the data in bytes.
- * 
- * This method will check if the next one or 2 bytes contain the new line or carriage return
- * control character. If this is the case, these will be omitted in the output.
- * @param buffer 
- * @param dataBytesLength 
- * @returns buffer 
- */
-
-/**
  * Split a buffer based on the length of the data in bytes
  * 
  * By default, this function will check for new line or carriage return control characters

@@ -21,15 +21,13 @@ export interface ICopybookItem {
     /** Total length of the copybook item */
     length: number;
 
-    start: number | undefined;
-
-    end: number | undefined;
-
     /** Indicator if the copybook item is signed */
     signed: boolean;
 
+    /** Usage of the current copybook item, e.g `DISPLAY` or `COMP-3` */
     usage: usageType
 
+    /** Object representing the offset of this copybook item in a transaction and the byteLength of this copybook item determined by the picture, length and usageType */
     dataPosition: IDataPosition;
 
     /** Amount of times this copybook item occurs, optional */
@@ -47,5 +45,19 @@ export interface ICopybookItem {
     /** Amount of decimals used, related to PIC clauses defining decimals. Currently not in use, optional */
     decimals?: number;
 
+    /**
+     * @experimental
+     * 
+     * Set the value of the copybook item
+     * 
+     * @param value 
+     */
     setValue(value: any): void;
+
+    /**
+     * Get the value of the copybook item as buffer which can be written to a file
+     * @returns buffer 
+     */
+    toBuffer(): Buffer;
+
 }
