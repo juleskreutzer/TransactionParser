@@ -1,3 +1,35 @@
+#### 0.1.7-alpha.0 (2026-01-28)
+
+##### Documentation Changes
+
+*  Updated code documentation for TypeDoc generation ([a24562a0](https://github.com/juleskreutzer/TransactionParser/commit/a24562a0144cc00e75fe00ed380108c3e2a09d50))
+*  Generate docs when new release is published ([a61e2e0e](https://github.com/juleskreutzer/TransactionParser/commit/a61e2e0e2e230e5453c4887b116a68d73ff60085))
+
+##### New Features
+
+* **Transaction:**  Load transaction data from a buffer ([7ac45a59](https://github.com/juleskreutzer/TransactionParser/commit/7ac45a590cd746dd95e1faa5ccea9a06d0980121))
+* **Parser:**  Keep track of byte length for each copybook item and usage type (DISPLAY or COMPUTATIONAL) ([81113b35](https://github.com/juleskreutzer/TransactionParser/commit/81113b355c51c73e5cb499942baabe0e225e7951))
+
+##### Bug Fixes
+
+* **tests:**  Updated several tests after code changes ([f657740a](https://github.com/juleskreutzer/TransactionParser/commit/f657740a14a7df53d6c4f34645355111067b2e8e))
+* **Parser:**
+  *  Filter out linenumber if these are present ([96381204](https://github.com/juleskreutzer/TransactionParser/commit/96381204f58e5412a07f26e32da6753c1a037254))
+  *  Regex to get header of copybook item now starts processing from position 7 to prevent incorrect parsing when line numbers are included in the copybook ([589540b6](https://github.com/juleskreutzer/TransactionParser/commit/589540b674356a28c6eb3a88b18ce37f9c1c6e8e))
+* **docs:**  Resolved TypeDoc warnings ([ac62077f](https://github.com/juleskreutzer/TransactionParser/commit/ac62077fb097315241e4b70252b8b8cf79c6e57e))
+
+##### Other Changes
+
+*  Upload docs folder to github-pages ([550d119c](https://github.com/juleskreutzer/TransactionParser/commit/550d119c3992460d9af71dd947727d438a8844a8))
+*  Updated documentation action workflow ([cfaa2c69](https://github.com/juleskreutzer/TransactionParser/commit/cfaa2c6949bde7e48d8295665813569c26be1df4))
+*  Updated npmignore and gitignore files ([e0f58773](https://github.com/juleskreutzer/TransactionParser/commit/e0f5877334c6ff8deca94a3e9f831ac4f38dcd0a))
+*  Include .github/ files in commits ([872550ce](https://github.com/juleskreutzer/TransactionParser/commit/872550ce7181ff9a82b765f1a6be5ded56464336))
+* **docs:**  Added typedoc dev dependency ([b475b792](https://github.com/juleskreutzer/TransactionParser/commit/b475b79202407aa53ed9ef299e1fe8be7b075f66))
+
+##### Refactors
+
+* **Transaction:**  Convert interface to use buffer instead of string ([a62b198d](https://github.com/juleskreutzer/TransactionParser/commit/a62b198dc19518043d70fe1f0fac33e7655807c6))
+
 #### 0.1.6 (2026-01-21)
 
 ##### New Features
