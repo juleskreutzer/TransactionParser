@@ -116,3 +116,16 @@ export function splitBuffer(buffer: Buffer, dataBytesLength: number, disableCont
 
     return result;
 }
+
+/**
+ * Write `buffer` to provided `path`
+ *
+ * @param {Buffer} buffer
+ * @param {string} path
+ */
+export function writeFile(buffer: Buffer, path: string): void {
+    if (buffer.length < 1) throw new Error(`Please provide data to write to file`);
+    if (path === '') throw new Error(`Please provide a file path`);
+    
+    fs.writeFileSync(path, buffer);
+}

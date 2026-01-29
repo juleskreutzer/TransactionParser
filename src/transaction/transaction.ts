@@ -216,5 +216,47 @@ export class Transaction implements ITransaction {
     toJson(): string {
         return JSON.stringify(this.dataItems);
     }
-    
+
+    /**
+     * Convert {@link ICopybookItem} values to a buffer
+     *
+     * @return {*}  {Buffer}
+     * @memberof Transaction
+     */
+    toBuffer(): Buffer {
+        let result: Buffer[] = [];
+
+        this.dataItems.forEach(item => {
+            if (item.picture === 'group' && item.children && item.children.length > 0) {
+                // process children
+                result.push(...this.processGroupToBuffer(item.children));
+            } else {
+                result.push(item.toBuffer());
+            }
+        });
+
+        return Buffer.concat(result);
+    }
+
+    /**
+     * Process group items
+     *
+     * @private
+     * @param {ICopybookItem[]} items
+     * @return {*}  {Buffer[]}
+     */
+    private processGroupToBuffer(items: ICopybookItem[]): Buffer[] {
+        let result: Buffer[] = []
+        items.forEach(item => {
+            if (item.picture === 'group' && item.children && item.children.length > 0) {
+                // process children
+                result.push(...this.processGroupToBuffer(item.children));
+            } else {
+                result.push(item.toBuffer());
+            }
+        });
+
+        return result;
+    }
+
 }
