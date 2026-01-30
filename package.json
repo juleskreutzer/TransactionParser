@@ -9,7 +9,7 @@
   ],
   "type": "module",
   "scripts": {
-    "test": "npm run build && mocha --exit 'test/**/*.test.js'",
+    "test": "npm run build && mocha --exit test/**/*.test.js",
     "clean": "rm -r ./dist",
     "build": "tsc",
     "compile": "npm run build",

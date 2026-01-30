@@ -51,7 +51,7 @@ describe('CopybookParser', () => {
       assert(cri, 'CRI-BW5 should be present');
       assert.strictEqual(cri.picture, 'number', 'CRI-BW5 should be a number');
       assert.strictEqual(cri.signed, true, 'CRI-BW5 should be signed');
-      assert.strictEqual(cri.value, '00', 'CRI-BW5 should have value "00" (stored as zero-padded string)');
+      assert.strictEqual(cri.value, '0', 'CRI-BW5 should have value "0" (COMP field stores raw numeric)');
       assert.strictEqual(cri.length, 2, 'CRI-BW5 should have length 2');
     });
   });

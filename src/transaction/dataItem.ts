@@ -99,7 +99,13 @@ export class DataItem implements ICopybookItem{
                 throw new Error(`Value for '${this.name}' exceeds defined length (${this.length})`);
             }
 
-            this.value = String(num).padStart(this.length, '0');;
+            // For COMP fields, store the numeric value as-is
+            // For DISPLAY fields, pad with leading zeros
+            if (this.usage === 'display') {
+                this.value = String(num).padStart(this.length, '0');
+            } else {
+                this.value = String(num);
+            }
             return;
         }
 
