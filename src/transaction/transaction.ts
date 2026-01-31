@@ -4,7 +4,6 @@ import { cp037 } from "../lookupTable/cp037.js";
 import { checkPathExists } from "../util/index.js";
 
 /**
- * @experimental
  * @class
  * 
  * The Transaction class represents a single line in a transactions file (package) that is represented by a copybook.

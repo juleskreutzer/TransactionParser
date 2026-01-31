@@ -53,8 +53,6 @@ export class DataItem implements ICopybookItem{
     }
 
     /**
-     * @experimental
-     * 
      * Set the value for this {@link DataItem} taking `picture` and `length` into account.
      * - For `string` pictures the value is converted to string, truncated or padded with spaces to `length`.
      * - For `number` and `packed` pictures the value is coerced to a Number and validated against `length` (total digits). Throws when value is not numeric or exceeds the defined length.

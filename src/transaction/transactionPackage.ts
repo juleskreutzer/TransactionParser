@@ -1,11 +1,13 @@
 import { Transaction } from "./transaction.js";
 import { CopybookParser } from "../parser/copybookParser.js";
-import { checkPathExists, readFile, readFileAsBuffer, splitBuffer } from "../util/index.js";
-import type { ITransactionPackage } from "../interface/transactionPackage.interface.ts";
-import type { ITransaction } from "../interface/transaction.interface.ts";
+import { checkPathExists, readFileAsBuffer, splitBuffer, writeFile } from "../util/index.js";
+import { DataItem } from "./dataItem.js";
+import type { ITransactionPackage } from "../interface/transactionPackage.interface.js";
+import type { ITransaction } from "../interface/transaction.interface.js";
+import type { ICopybookItem } from "../interface/copybookItem.interface.js"
+import type { IDataPosition } from "../interface/dataPosition.interface.ts";
 
 /**
- * @experimental
  * @class
  * 
  * The TransactionPackage class represents a transaction file that can contain multiple transactions.
@@ -37,6 +39,44 @@ export class TransactionPackage implements ITransactionPackage {
     }
 
     /**
+     * Create a clone of the copybook items retrieved from parser to prevent reuse of the same instances and overwriting data
+     *
+     * @private
+     * @param {ICopybookItem[]} items
+     * @return {*}  {ICopybookItem[]}
+     */
+    private clone(items: ICopybookItem[]): ICopybookItem[] {
+        let result: DataItem[] = [];
+
+        items.forEach(item => {
+            const newDataPositon: IDataPosition = { offset: item.dataPosition.offset, byteLength: item.dataPosition.byteLength };
+            const newItem: DataItem = new DataItem(
+                item.level,
+                item.name,
+                item.picture,
+                item.length,
+                item.signed,
+                item.usage,
+                newDataPositon,
+                item.occurs,
+                undefined,
+                undefined,
+                item.value,
+                item.decimals
+            );
+
+            newItem.redefines = item.redefines;
+            if (item.children && item.children.length > 0) {
+                newItem.children = this.clone(item.children);
+            }
+
+            result.push(newItem as DataItem);
+        });
+
+        return result;
+    }
+
+    /**
      * Load transaction(s) from a buffer
      * 
      * @remarks
@@ -51,7 +91,7 @@ export class TransactionPackage implements ITransactionPackage {
         const buffers = splitBuffer(data, this.parser.getTotalByteLength());
 
         buffers.forEach(buf => {
-            this.transactions.push(new Transaction(this.copybookPath, this.parser.getParsedCopybook(), buf));
+            this.transactions.push(new Transaction(this.copybookPath, this.clone(this.parser.getParsedCopybook()), buf));
         })
     }
 
@@ -87,16 +127,34 @@ export class TransactionPackage implements ITransactionPackage {
      * Create a new empty transaction in this package.
      */
     createEmptyTransaction(): void {
-        this.transactions.push(new Transaction(this.copybookPath, this.parser.getParsedCopybook()));
+        this.transactions.push(new Transaction(this.copybookPath, this.clone(this.parser.getParsedCopybook())));
     }
 
     /**
      * Convert the current transaction package to a buffer
+     * 
+     * @remarks
+     * At the end of each transaction, a `x'15'` (New Line) byte is inserted
      *
      * @return {*}  {Buffer}
      */
     toBuffer(): Buffer {
-        throw new Error("Method not implemented.");
+        if (this.transactions.length === 0) {
+            return Buffer.alloc(this.parser.getTotalByteLength() + 1).fill(0);
+        } else {
+            // Create a buffer with size of data length for 1 transaction times the amount of transactions in this package, plus 1 byte per transaction for new line character
+            let buffer: Buffer = Buffer.alloc((this.parser.getTotalByteLength() * this.transactions.length) + this.transactions.length);
+            for(let i = 0; i < this.transactions.length; i++) {
+                if (i === 0) {
+                    buffer.fill(this.transactions[i]!.toBuffer(), 0, this.parser.getTotalByteLength());
+                    buffer.fill(0x15, this.parser.getTotalByteLength(), this.parser.getTotalByteLength() + 1); // Insert new line character
+                } else {
+                    buffer.fill(this.transactions[i]!.toBuffer(), (i * this.parser.getTotalByteLength()) + i, ((i + 1) * this.parser.getTotalByteLength()) + i);
+                    buffer.fill(0x15, ((i + 1) * this.parser.getTotalByteLength()) + i, ((i + 1) * this.parser.getTotalByteLength()) + i + 1); // Insert new line character
+                }
+            }
+            return buffer;
+        }
     }
 
     /**
@@ -114,7 +172,8 @@ export class TransactionPackage implements ITransactionPackage {
      * @param {string} path
      */
     save(path: string): void {
-        throw new Error("Method not implemented.");
+        if (path === '') throw new Error('Please provide a path to save the transaction package to');
+        writeFile(this.toBuffer(), path);
     }
 
 }

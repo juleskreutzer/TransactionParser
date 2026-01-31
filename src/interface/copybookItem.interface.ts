@@ -45,9 +45,7 @@ export interface ICopybookItem {
     /** Amount of decimals used, related to PIC clauses defining decimals. Currently not in use, optional */
     decimals?: number;
 
-    /**
-     * @experimental
-     * 
+    /** 
      * Set the value of the copybook item
      * 
      * @param value 
