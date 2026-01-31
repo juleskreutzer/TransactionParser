@@ -119,7 +119,6 @@ export class DataItem implements ICopybookItem{
      * If the value is not set, an empty value will be returned according tot the picture and length
      *
      * @return {*}  {Buffer} Buffer representation of the current value
-     * @memberof DataItem
      */
     toBuffer(): Buffer {
         const buffer: Buffer = Buffer.alloc(this.dataPosition.byteLength, undefined, 'binary');

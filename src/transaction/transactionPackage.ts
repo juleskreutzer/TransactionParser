@@ -68,38 +68,19 @@ export class TransactionPackage implements ITransactionPackage {
     }
 
     /**
-     * Get a transaction from this package based on the index 
-     * @param index 
-     * @returns transaction 
-     */
-    getTransaction(index: number): ITransaction | undefined {
-        return this.transactions[index];
-    }
-
-    /**
-     * Get all transaction in this transaction package
-     * @returns transaction Array of transactions, or undefined if no transactions exist
-     */
-    getTransactions(): ITransaction[] {
-        return this.transactions;
-    }
-
-    /**
      * Get the first transaction from this package
      * @returns first transaction 
      */
     getFirstTransaction(): ITransaction | undefined {
-        if (this.transactions.length === 0) return undefined
-        else return this.transactions[0];
+        return this.transactions.length > 0 ? this.transactions[0] : undefined;
     }
 
     /**
-     * Get the last transaction from this packagee
+     * Get the last transaction from this package
      * @returns last transaction 
      */
     getLastTransaction(): ITransaction | undefined {
-        if (this.transactions.length === 0) return undefined;
-        else return this.transactions[this.transactions.length - 1];
+        return this.transactions.length > 0 ? this.transactions[this.transactions.length - 1] : undefined;
     }
 
     /**
@@ -107,6 +88,33 @@ export class TransactionPackage implements ITransactionPackage {
      */
     createEmptyTransaction(): void {
         this.transactions.push(new Transaction(this.copybookPath, this.parser.getParsedCopybook()));
+    }
+
+    /**
+     * Convert the current transaction package to a buffer
+     *
+     * @return {*}  {Buffer}
+     */
+    toBuffer(): Buffer {
+        throw new Error("Method not implemented.");
+    }
+
+    /**
+     * Convert the current package to an array of transactions as JSON string
+     *
+     * @return {*}  {string}
+     */
+    toJson(): string {
+        return JSON.stringify(this.transactions);
+    }
+
+    /**
+     * Save the current package to a file
+     *
+     * @param {string} path
+     */
+    save(path: string): void {
+        throw new Error("Method not implemented.");
     }
 
 }

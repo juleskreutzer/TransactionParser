@@ -35,7 +35,55 @@ export interface ITransactionPackage {
     loadFile(path: string): void;
 
     /**
+     * Get the first transaction in the current package, or `undefined` if no transactions exist.
+     * 
+     * @remarks
+     * Convenience method, you can also use:
+     * ```typescript
+     * transactionPackage.transactions[0]
+     * ```
+     *
+     * @return {*}  {(ITransaction | undefined)}
+     */
+    getFirstTransaction(): ITransaction | undefined;
+
+    /**
+     * Get the last transaction in the current package, or `undefined` if no transactions exist.
+     * 
+     * @remarks
+     * Convenience method, you can also use:
+     * ```typescript
+     * transactionPackage.transactions[transactionPackage.transactions.length - 1]
+     * ```
+     * @return {*} {(ITransaction | undefined)}
+     */
+    getLastTransaction(): ITransaction | undefined;
+
+    /**
      * Create a new empty transaction using the parsed copybook
      */
     createEmptyTransaction(): void;
+
+    /**
+     * Convert the current transaction package to a buffer
+     *
+     * @return {*}  {Buffer}
+     */
+    toBuffer(): Buffer;
+
+    /**
+     * Convert the current transaction package to an array of transactions as JSON string
+     *
+     * @return {*}  {string}
+     */
+    toJson(): string;
+
+    /**
+     * Save the current transaction package to file.
+     * 
+     * The new line character `x'15'` will be added at the end of each transaction
+     *
+     * @param {string} path
+     */
+    save(path: string): void;
 }

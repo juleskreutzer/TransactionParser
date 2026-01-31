@@ -221,7 +221,6 @@ export class Transaction implements ITransaction {
      * Convert {@link ICopybookItem} values to a buffer
      *
      * @return {*}  {Buffer}
-     * @memberof Transaction
      */
     toBuffer(): Buffer {
         let result: Buffer[] = [];

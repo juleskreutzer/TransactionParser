@@ -45,7 +45,6 @@ export interface ITransaction {
      * Convert the transaction to a Buffer that can be used to write contents of the transaction to a file
      *
      * @return {*}  {Buffer}
-     * @memberof ITransaction
      */
     toBuffer(): Buffer;
 
