@@ -13,11 +13,7 @@ import { checkPathExists } from "../util/index.js";
 export class Transaction implements ITransaction {
     private dataItems: ICopybookItem[] = [];
 
-    constructor(copybookPath: string, dataItem: ICopybookItem[], transactionData?: Buffer) {
-        // Check if copybook path exists
-        checkPathExists(copybookPath);
-
-        // Parse copybook to create dataItems
+    constructor(dataItem: ICopybookItem[], transactionData?: Buffer) {
         this.dataItems = dataItem
 
         // If transactionData is provide, parse it into the dataItems

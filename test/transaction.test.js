@@ -11,10 +11,7 @@ const __dirname = path.dirname(__filename);
 
 describe('Transaction buffer processing', () => {
   describe('COMP field reading', () => {
-    it('reads 4-byte signed COMP field from buffer', () => {
-      // Create a simple copybook structure
-      const copybookPath = path.join(__dirname, 'assets', 'example_copybook.txt');
-      
+    it('reads 4-byte signed COMP field from buffer', () => {      
       // Manually create a data item for testing
       const compItem = new DataItem(
         5, 
@@ -30,7 +27,7 @@ describe('Transaction buffer processing', () => {
       const buffer = Buffer.from([0x01, 0x53, 0x37, 0x27]);
       
       // Process it
-      const transaction = new Transaction(copybookPath, [compItem], buffer);
+      const transaction = new Transaction([compItem], buffer);
       const item = transaction.getCopybookItem('TEST-COMP');
       
       assert.strictEqual(item.value, '22230823'); // The actual value of those bytes
@@ -51,8 +48,7 @@ describe('Transaction buffer processing', () => {
       const buffer = Buffer.alloc(2);
       buffer.writeInt16BE(1000, 0);
       
-      const copybookPath = path.join(__dirname, 'assets', 'example_copybook.txt');
-      const transaction = new Transaction(copybookPath, [compItem], buffer);
+      const transaction = new Transaction([compItem], buffer);
       const item = transaction.getCopybookItem('SHORT-COMP');
       
       assert.strictEqual(item.value, '1000');
@@ -73,8 +69,7 @@ describe('Transaction buffer processing', () => {
       const buffer = Buffer.alloc(4);
       buffer.writeInt32BE(-12345, 0);
       
-      const copybookPath = path.join(__dirname, 'assets', 'example_copybook.txt');
-      const transaction = new Transaction(copybookPath, [compItem], buffer);
+      const transaction = new Transaction([compItem], buffer);
       const item = transaction.getCopybookItem('NEG-COMP');
       
       assert.strictEqual(item.value, '-12345');
@@ -95,8 +90,7 @@ describe('Transaction buffer processing', () => {
       const buffer = Buffer.alloc(4);
       buffer.writeFloatBE(3.14159, 0);
       
-      const copybookPath = path.join(__dirname, 'assets', 'example_copybook.txt');
-      const transaction = new Transaction(copybookPath, [compItem], buffer);
+      const transaction = new Transaction([compItem], buffer);
       const item = transaction.getCopybookItem('FLOAT-COMP');
       
       const value = parseFloat(item.value);
@@ -118,8 +112,7 @@ describe('Transaction buffer processing', () => {
       const buffer = Buffer.alloc(8);
       buffer.writeDoubleBE(3.141592653589793, 0);
       
-      const copybookPath = path.join(__dirname, 'assets', 'example_copybook.txt');
-      const transaction = new Transaction(copybookPath, [compItem], buffer);
+      const transaction = new Transaction([compItem], buffer);
       const item = transaction.getCopybookItem('DOUBLE-COMP');
       
       assert.strictEqual(item.value, '3.141592653589793');
@@ -142,8 +135,7 @@ describe('Transaction buffer processing', () => {
       // 01 23 4C (last nibble C = positive)
       const buffer = Buffer.from([0x12, 0x34, 0x5C]);
       
-      const copybookPath = path.join(__dirname, 'assets', 'example_copybook.txt');
-      const transaction = new Transaction(copybookPath, [packedItem], buffer);
+      const transaction = new Transaction([packedItem], buffer);
       const item = transaction.getCopybookItem('PACKED-FIELD');
       
       assert.strictEqual(item.value, '12345');
@@ -164,8 +156,7 @@ describe('Transaction buffer processing', () => {
       // 01 23 4D (last nibble D = negative)
       const buffer = Buffer.from([0x12, 0x34, 0x5D]);
       
-      const copybookPath = path.join(__dirname, 'assets', 'example_copybook.txt');
-      const transaction = new Transaction(copybookPath, [packedItem], buffer);
+      const transaction = new Transaction([packedItem], buffer);
       const item = transaction.getCopybookItem('PACKED-NEG');
       
       assert.strictEqual(item.value, '-12345');
@@ -186,8 +177,7 @@ describe('Transaction buffer processing', () => {
       // 00 01 2C
       const buffer = Buffer.from([0x00, 0x12, 0x3C]);
       
-      const copybookPath = path.join(__dirname, 'assets', 'example_copybook.txt');
-      const transaction = new Transaction(copybookPath, [packedItem], buffer);
+      const transaction = new Transaction([packedItem], buffer);
       const item = transaction.getCopybookItem('PACKED-SMALL');
       
       assert.strictEqual(item.value, '123');
@@ -210,8 +200,7 @@ describe('Transaction buffer processing', () => {
       // '1' = 0xF1, '2' = 0xF2, '3' = 0xF3, '4' = 0xF4
       const buffer = Buffer.from([0xF1, 0xF2, 0xF3, 0xF4]);
       
-      const copybookPath = path.join(__dirname, 'assets', 'example_copybook.txt');
-      const transaction = new Transaction(copybookPath, [displayItem], buffer);
+      const transaction = new Transaction([displayItem], buffer);
       const item = transaction.getCopybookItem('DISPLAY-NUM');
       
       assert.strictEqual(item.value, '1234');
@@ -237,8 +226,7 @@ describe('Transaction buffer processing', () => {
       const buffer = compItem.toBuffer();
       
       // Read back from buffer
-      const copybookPath = path.join(__dirname, 'assets', 'example_copybook.txt');
-      const transaction = new Transaction(copybookPath, [compItem], buffer);
+      const transaction = new Transaction([compItem], buffer);
       const item = transaction.getCopybookItem('ROUNDTRIP');
       
       assert.strictEqual(item.value, testValue.toString());
@@ -262,8 +250,7 @@ describe('Transaction buffer processing', () => {
       const buffer = packedItem.toBuffer();
       
       // Read back from buffer
-      const copybookPath = path.join(__dirname, 'assets', 'example_copybook.txt');
-      const transaction = new Transaction(copybookPath, [packedItem], buffer);
+      const transaction = new Transaction([packedItem], buffer);
       const item = transaction.getCopybookItem('PACKED-RT');
       
       assert.strictEqual(item.value, testValue.toString().padStart(7, '0'));

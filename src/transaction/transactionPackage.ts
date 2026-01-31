@@ -23,7 +23,6 @@ import type { IDataPosition } from "../interface/dataPosition.interface.ts";
  */
 export class TransactionPackage implements ITransactionPackage {
     transactions: ITransaction[];
-    private copybookPath: string;
     readonly parser: CopybookParser;
     
     constructor(copybookPath: string, transactions?: ITransaction[]) {
@@ -32,10 +31,9 @@ export class TransactionPackage implements ITransactionPackage {
         // Check if copybook path exists
         checkPathExists(copybookPath);
 
-        this.copybookPath = copybookPath;
         this.parser = new CopybookParser(copybookPath);
         this.parser.parse();
-        this.transactions = transactions === undefined || transactions.length === 0 ? [] : transactions;
+        this.transactions = transactions === undefined ? [] : transactions.length > 0 ? transactions : [];
     }
 
     /**
@@ -91,7 +89,7 @@ export class TransactionPackage implements ITransactionPackage {
         const buffers = splitBuffer(data, this.parser.getTotalByteLength());
 
         buffers.forEach(buf => {
-            this.transactions.push(new Transaction(this.copybookPath, this.clone(this.parser.getParsedCopybook()), buf));
+            this.transactions.push(new Transaction(this.clone(this.parser.getParsedCopybook()), buf));
         })
     }
 
@@ -127,7 +125,7 @@ export class TransactionPackage implements ITransactionPackage {
      * Create a new empty transaction in this package.
      */
     createEmptyTransaction(): void {
-        this.transactions.push(new Transaction(this.copybookPath, this.clone(this.parser.getParsedCopybook())));
+        this.transactions.push(new Transaction(this.clone(this.parser.getParsedCopybook())));
     }
 
     /**
