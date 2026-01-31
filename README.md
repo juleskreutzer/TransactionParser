@@ -81,6 +81,42 @@ Will be parsed and represented as a JSON object:
 ]
 ```
 
-## Load transaction data
-In the future, this package will support loading transaction data from a file based on a copybook that will be used for validation.
+## Transaction Packages and Transactions
+This package uses the term `transaction package` to indicate a package containing zero or more transactions. A `Transaction` is the representation of the parsed copybook and it's values.
+
+### Usage
+Create a new (empty) transaction package:
+```typescript
+import { TransactionPackage } from 'transactionparser';
+
+const copybookPath = '/Path/to/copybook';
+const tp = new TransactionPackage(copybookPath);
+```
+Once a transaction package is created, you can either fill it with empty transactions:
+```typescript
+tp.createEmptyTransaction();
+```
+Or load the contents of a Mainframe file downloaded in binary mode:
+```typescript
+const dataFile = '/Path/to/binary/file';
+tp.loadFile(dataFile);
+```
+
+### Editing data from a transaction
+The `transactions` property on the transaction package can be used to retrieve an array of all transactions in the package. Alternatively, helper methods like `getFirstTransaction()` or `getLastTransaction()` are also available.
+
+To update the value for the `FIRST-NAME` field, you can:
+```typescript
+tp.transactions[0].getCopybookItem('FIRST-NAME').setValue('Jules');
+```
+
+### Saving data
+The `TransactionPackage` class provides the functionality to write the package back to a file, that can the, for example using the Zowe CLI, be uploaded back to the Mainframe.
+
+```typescript
+tp.save('/path/my_modified_transaction');
+```
+> Note: This uses the `TransactionPackage#toBuffer()` method which will add the new line character, EBCDIC byte `x'15'` at the end of every transaction.
+
+Alternatively, you can also use the `toJson()` or `toBuffer()` methods to convert the transaction package to a stringyfied JSON array or buffer.
 
