@@ -1,3 +1,23 @@
+### 0.2.0.1 (2026-01-31)
+
+##### Documentation Changes
+
+*  Updated documentation ([420c931c](https://github.com/juleskreutzer/TransactionParser/commit/420c931c834c4210aba90146d36c751e035a754f))
+
+##### New Features
+
+*  Save a transaction package to a file ([ad41c554](https://github.com/juleskreutzer/TransactionParser/commit/ad41c5549a8dcdcfe4b56e86f1f98aaaf6691866))
+* **Transaction:**  Add support to convert a transaction into a buffer ([fea93886](https://github.com/juleskreutzer/TransactionParser/commit/fea938863226fc879ee6c5e41155366725622cc6))
+
+##### Refactors
+
+*  Remove unused variables in Transaction and TransactionPackage classes ([3f8c7c5f](https://github.com/juleskreutzer/TransactionParser/commit/3f8c7c5fd58e835f4960b9325dc8df6cdefb4643))
+
+##### Tests
+
+* **TransactionPackage:**  Added test cases for transaction package ([962d8584](https://github.com/juleskreutzer/TransactionParser/commit/962d8584da5fb55a84902e1d460039bf749424cf))
+*  Added test cases to test latest code changes ([695fee75](https://github.com/juleskreutzer/TransactionParser/commit/695fee75e0ec0b5ef751a5ff1a506dbbbb74a797))
+
 #### 0.1.7-alpha.0 (2026-01-28)
 
 ##### Documentation Changes
