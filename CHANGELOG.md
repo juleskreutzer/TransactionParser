@@ -1,3 +1,9 @@
+#### 0.2.1 (2026-01-31)
+
+##### Documentation Changes
+
+* **README:**  Updated readme to reflect changes for TransactionPackage and Transaction support ([5f55008a](https://github.com/juleskreutzer/TransactionParser/commit/5f55008a39b3c278044d4ed746d22fca48374324))
+
 ### 0.2.0.1 (2026-01-31)
 
 ##### Documentation Changes
