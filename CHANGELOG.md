@@ -1,3 +1,13 @@
+#### 0.2.1 (2026-02-03)
+
+##### New Features
+
+* **CLI:**  Add CLI to convert transaction data to JSON or CSV format ([ef786bc2](https://github.com/juleskreutzer/TransactionParser/commit/ef786bc2a15420d5849f80278b3e8193200a9131))
+
+##### Other Changes
+
+* **package:**  Updated npm scripts to use double quotes ([d3cb214f](https://github.com/juleskreutzer/TransactionParser/commit/d3cb214f88987ecd46271847875e99c75a28b0ab))
+
 #### 0.2.1 (2026-01-31)
 
 ##### Documentation Changes
