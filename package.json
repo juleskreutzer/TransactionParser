@@ -4,6 +4,10 @@
   "description": "Parse files containing transaction data using COBOL copybooks into a TypeScript object",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
+  "bin": {
+    "transactionparser": "./bin/transactionparser",
+    "trapar": "./bin/transactionparser"
+  },
   "files": [
     "dist/**/*"
   ],
@@ -45,5 +49,9 @@
     "mocha": "^11.7.5",
     "typedoc": "^0.28.16",
     "typescript": "^5.9.3"
+  },
+  "dependencies": {
+    "commander": "^14.0.3",
+    "json-2-csv": "^5.5.10"
   }
 }

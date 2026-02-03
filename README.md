@@ -72,7 +72,8 @@ Will be parsed and represented as a JSON object:
               "offset": 0,
               "byteLength": 15
             },
-            "decimals": 0
+            "decimals": 0,
+            "value": "               "
           }
         ]
       }
@@ -119,4 +120,31 @@ tp.save('/path/my_modified_transaction');
 > Note: This uses the `TransactionPackage#toBuffer()` method which will add the new line character, EBCDIC byte `x'15'` at the end of every transaction.
 
 Alternatively, you can also use the `toJson()` or `toBuffer()` methods to convert the transaction package to a stringyfied JSON array or buffer.
+
+## CLI
+This package also provides a Command Line Interface (CLI) to convert a (binairy) transaction file into a JSON or CSV file.
+
+### Installation
+Install the package globally using:
+```bash
+npm i -g transactionparser
+```
+
+This will make the `transactionparser` (or the shorter `traper` version) available in your terminal.
+
+### Usage
+
+- `trapar -h` Show Help info with available commands
+- `trapar parse -h` Show help info for the `parse` command
+
+#### Convert data to JSON
+```bash
+trapar parse 'path/to/data' -c 'path/to/copybook' -f 'JSON' -o 'output.txt'` 
+```
+Convert the data at `path/to/data` using the copybook located at `/path/to/copybook` and format it to a `JSON` string stored in `output.txt`
+
+#### Convert data to CSV
+```bash
+trapar parse 'path/to/data' -c 'path/to/copybook' -f 'CSV' -o 'output.csv' 
+```
 

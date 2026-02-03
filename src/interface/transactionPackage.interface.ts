@@ -74,9 +74,10 @@ export interface ITransactionPackage {
     /**
      * Convert the current transaction package to an array of transactions as JSON string
      *
+     * @param {number} [spaces] Number of spaces to use for indentation 
      * @return {*}  {string}
      */
-    toJson(): string;
+    toJson(spaces?: number): string;
 
     /**
      * Save the current transaction package to file.

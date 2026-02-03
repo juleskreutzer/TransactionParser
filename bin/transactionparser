@@ -1,0 +1,83 @@
+#! /usr/bin/env node
+
+import { Command } from 'commander';
+import { json2csv } from 'json-2-csv';
+import * as fs from 'fs';
+import { TransactionPackage } from '../dist/transaction/transactionPackage.js';
+
+const program = new Command();
+
+program.name('TransactionParser')
+    .description('Parse files containing transaction data using COBOL copybooks into a TypeScript object');
+
+program.command('parse')
+    .description('Load a transaction file based on a COBOL copybook')
+    .argument('<transactionFile>', 'Path to data file')
+    .option('-c, --copybook <copybook>', 'Path to COBOL copybook file used for parsing')
+    .option('-f, --format <format>', 'Output format, JSON or CSV', 'json')
+    .option('-o, --output <output>', 'Output file for the parsed copybook', )
+    .action((traFile, options) => {
+        if (traFile === '') {
+            console.error('Empty transaction file path provided');
+            return;
+        }
+
+        if (!options.copybook) {
+            console.error('No copybook path provided');
+            return;
+        }
+
+        if (!options.format) {
+            console.info('No output format provided, defaulting to JSON');
+            options.format = 'json';
+        }
+
+        if (!options.format.match(/^(json|csv)$/i)) {
+            console.info('Invalid output format provided, defaulting to JSON');
+            options.format = 'json';
+        }
+
+        const tp = new TransactionPackage(options.copybook);
+        tp.loadFile(traFile);
+        
+        if (options.output) {
+            switch (options.format.toLowerCase()) {
+                case 'json':
+                    fs.writeFileSync(options.output, tp.toJson(4));
+                    break;
+                case 'csv':
+                    let data = []
+                    tp.transactions.forEach(tra => {
+                        data.push(prepareCsvData(tra.getCopybookItems()));
+                    });
+                    console.log(data);
+
+                    const csv = json2csv(data, { 
+                        delimiter: ','
+                    });
+                    fs.writeFileSync(options.output, csv);
+                    break;
+                default:
+                    console.error(`Unsupported output format: ${options.format}`);
+                    return
+            }
+        } else {
+            console.log(tp.toJson());
+        }
+    });
+
+function prepareCsvData(data) {
+    let result = {};
+
+    data.forEach(item => {
+        if (item.children && item.children.length > 0) {
+            Object.assign(result, prepareCsvData(item.children));
+        } else {
+            result[item.name] = item.value
+        }
+    })
+
+    return result;
+}
+
+program.parse();

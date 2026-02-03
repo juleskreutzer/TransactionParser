@@ -158,10 +158,11 @@ export class TransactionPackage implements ITransactionPackage {
     /**
      * Convert the current package to an array of transactions as JSON string
      *
+     * @param {number} [spaces] Number of spaces to use for indentation
      * @return {*}  {string}
      */
-    toJson(): string {
-        return JSON.stringify(this.transactions);
+    toJson(spaces?: number): string {
+        return JSON.stringify(this.transactions, null, spaces);
     }
 
     /**
