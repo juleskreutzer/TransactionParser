@@ -36,7 +36,7 @@ describe('DataItem.setValue', () => {
 
   it('throws when setting a value on a group', () => {
     const g = new DataItem(1, 'GR', 'group', 0, false, 'display', { offset: 0, byteLength: 0 });
-    assert.throws(() => g.setValue('x'), /Cannot set value on a group/);
+    assert.throws(() => g.setValue('x'), /Unable to set value for group item/);
   });
 });
 
