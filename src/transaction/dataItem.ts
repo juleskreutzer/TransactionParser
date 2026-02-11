@@ -53,62 +53,76 @@ export class DataItem implements ICopybookItem{
     }
 
     /**
-     * Set the value for this {@link DataItem} taking `picture` and `length` into account.
-     * - For `string` pictures the value is converted to string, truncated or padded with spaces to `length`.
-     * - For `number` and `packed` pictures the value is coerced to a Number and validated against `length` (total digits). Throws when value is not numeric or exceeds the defined length.
-     * - For `group` pictures setting a value is not allowed (throws).
-     * @param val The value to set
+     * Set the value for this {@link DataItem} taking `picture`, `length` and `usage` into account.
+     * - For `string` the value is converted to string, truncated or padded with spaces to `length`
+     * - For `number` and `packed` the value is converted to a number and validated against `length` (total digits). Throws when value is not numeric or exceeds the defined length
+     *   - When `usage` is `display`, the value is stored as a string padded with leading zeros to match the defined length. 
+     *   - When `usage` is `comp` (or any other non-display usage), the value is stored as a numeric string without padding ({@link DataItem.toBuffer()} will handle the conversion to the appropriate binary format based on usage)
+     * 
+     * @remarks
+     * Setting the value for a group item (picture `group`) is not allowed and will throw an error
+     *
+     * @param {*} val Value to set
+     * @return {*}  {void}
      */
     setValue(val: any): void {
-        // Use implied decimals when validating numeric values
-        // Allow clearing the value
         if (val === undefined || val === null) {
+            // Clear current value
             this.value = undefined;
             return;
         }
 
-        if (this.picture === 'group') {
-            throw new Error(`Cannot set value on a group item '${this.name}'`);
+        switch (this.picture) {
+            case 'string':
+                // Convert val to a string
+                let s = String(val);
+
+                if (this.length && s.length > this.length) {
+                    // Truncate if value exceeds defined length
+                    s = s.substring(0, this.length);
+                } else if (this.length && s.length < this.length) {
+                    // Pad with spaces at the end if val doesn't use the complete length
+                    s = s.padEnd(this.length, ' ');
+                }
+
+                this.value = s;
+                return;
+            case 'number':
+            case 'packed':
+                // packed is treated the same as number for setting the value, the difference is in how it's converted to a buffer in toBuffer()
+                const num = Number(val);
+                if (Number.isNaN(num)) throw new Error(`Value '${val}' for '${this.name}' is not a valid number (offset '${this.dataPosition.offset}' length '${this.dataPosition.byteLength}')`);
+
+                // Count digits (ignoring sign and decimal point). -12.3 -> 3 digits
+                const multiplier = Math.pow(10, this.decimals || 0);
+                const absInt = Math.round(Math.abs(num) * multiplier);
+                const digits = String(absInt);
+                const digitCount = digits.length === 0 ? 1 : digits.length;
+
+                if (!this.length) {
+                    throw new Error(`Unable to set value '${val}' for '${this.name}' because length is not defined`)
+                }
+
+                if (digitCount > this.length) {
+                    throw new Error(`Value '${val}' for '${this.name}' exceeds defined length (${this.length})`);
+                }
+
+                if (this.usage === 'display') {
+                    this.value = String(num).padStart(this.length, '0');
+                } else {
+                    this.value = String(num);
+                }
+                return;
+            case 'group':
+                if (!this.children || this.children.length === 0) {
+                    throw new Error(`Unable to set value for group item '${this.name}' because it has no children`);
+                }
+
+                throw new Error(`Setting value for group item '${this.name}' is currently not supported`);
+                return;
+            default:
+                throw new Error(`Picture type '${this.picture}' is not supported in setValue() for item '${this.name}'`);
         }
-
-        if (this.picture === 'string') {
-            let s = String(val);
-            if (this.length && s.length > this.length) {
-                s = s.substring(0, this.length);
-            } else if (this.length && s.length < this.length) {
-                s = s.padEnd(this.length, ' ');
-            }
-            this.value = s;
-            return;
-        }
-
-        if (this.picture === 'number' || this.picture === 'packed') {
-            const num = Number(val);
-            if (Number.isNaN(num)) throw new Error(`Value for '${this.name}' is not a valid number`);
-
-            // Count digits (ignoring sign and decimal point). For example, 12.3 -> digits=3
-            // Respect implied decimals: the stored length represents total digits including decimals
-            const multiplier = Math.pow(10, this.decimals || 0);
-            const absInt = Math.round(Math.abs(num) * multiplier);
-            const digits = String(absInt);
-            const digitCount = digits.length === 0 ? 1 : digits.length;
-
-            if (this.length && digitCount > this.length) {
-                throw new Error(`Value for '${this.name}' exceeds defined length (${this.length})`);
-            }
-
-            // For COMP fields, store the numeric value as-is
-            // For DISPLAY fields, pad with leading zeros
-            if (this.usage === 'display') {
-                this.value = String(num).padStart(this.length, '0');
-            } else {
-                this.value = String(num);
-            }
-            return;
-        }
-
-        // Fallback - set as-is
-        this.value = val;
     }
 
     /**
