@@ -1,3 +1,13 @@
+#### 0.2.3.1 (2026-02-11)
+
+##### Bug Fixes
+
+* **Tests:**  Fixed a DataItem unit test to check if correct expection is thrown when setting a value for a group item ([f9403f83](https://github.com/juleskreutzer/TransactionParser/commit/f9403f837f5e5f3ef13213ff863051721dcd5bb8))
+
+##### Refactors
+
+* **DataItem:**  Refactored DataItem#setValue ([9c9c92d4](https://github.com/juleskreutzer/TransactionParser/commit/9c9c92d415fc933581413e18f429bea20b02e678))
+
 #### 0.2.2-alpha.0 (2026-02-03)
 
 #### 0.2.1 (2026-02-03)
