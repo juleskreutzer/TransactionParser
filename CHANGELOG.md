@@ -1,3 +1,9 @@
+#### 0.2.3 (2026-02-21)
+
+##### Bug Fixes
+
+* **Parser:**  VALUE ZERO and VALUE SPACE statements are now parsed correctly ([6ea58592](https://github.com/juleskreutzer/TransactionParser/commit/6ea5859236db3c1ff515bafe3942ed1140f1bd00))
+
 #### 0.2.3.1 (2026-02-11)
 
 ##### Bug Fixes
