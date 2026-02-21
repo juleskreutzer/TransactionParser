@@ -166,7 +166,8 @@ export class CopybookParser {
             let value: any = undefined;
             if (valueMatch) {
                 if (valueMatch[2] !== undefined) value = valueMatch[2];
-                else if(/^ZERO$/i.test(valueMatch[1]!)) value = 0
+                else if (/^ZERO$/i.test(valueMatch[1]!)) value = 0
+                else if (/^SPACE$/i.test(valueMatch[1]!)) value = ''.padEnd(length, ' ')
                 else value = valueMatch[1];
             }
 
