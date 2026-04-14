@@ -3,18 +3,32 @@ import type { EventCallback } from "../type/eventCallback.type.ts";
 /**
  * @class
  * 
- * The TypedEventEmitter class is used to provide a typed way of emitting events. It can be used by a consumer
- * application to be notified during certain stages of this package, for example when parsing a copybook,
- * an event is triggered at the start of parsing, at the start of every new line, at the end of every line
+ * The TypedEventEmitter class is used to provide a typed way of emitting events. 
+ * 
+ * It can be used by a consumer application to be notified during certain stages while executing this package, 
+ * for example when parsing a copybook, an event is triggered at the start of parsing, at the start of every new line, at the end of every line
  * and at the end of processing.
  * 
+ * ---
+ * ### Supported events
+ * - {@link IParsingEvent } defines the `start`, `newLine`, `endLine` and `end` event that are triggered during copybook parsing
+ * 
+ * 
  * @example
+ * Subscribe to events
  * ```ts
  * const parser = new CopybookParser('/path/to/copybook');
  * const emitter = parser.getEventEmitter()
  * emitter.subscribe('start', (payload) => {
  *  console.log(payload) // contains properties copybook, rawData and preparedData
  * });
+ * ```
+ * 
+ * Emitting events
+ * ```ts
+ * const emitter = new TypedEventEmitter<IParsingEvent>(); // start, newLine, endLine and end events will be available
+ * emitter.emit('start', { copybook: '/path/to/copybook', rawData: '  rawData  ', preparedData: ['rawData']})
+ * ```
  */
 export class TypedEventEmitter<TEvents> {
     private listeners: {

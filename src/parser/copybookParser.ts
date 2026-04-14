@@ -73,6 +73,7 @@ export class CopybookParser {
         const dataItems: DataItem[] = [];
         const stack: { level: number, item: DataItem}[] = [];
 
+        // Emit the 'start' event and provide copybook, raw data and lines that will be processed as payload
         this.emitter.emit('start', { copybook: this.copybookPath, rawData: data, preparedData: lines});
 
         for (let l of lines) {
@@ -80,6 +81,7 @@ export class CopybookParser {
             let line = l.replace(/\./g, '').trim();
             if (line === '') continue;
 
+            // Emit the 'newLine' event and provide copybook path, line that is currently processed and items that have already been processed as payload
             this.emitter.emit('newLine', { copybook: this.copybookPath, line: line, parsedItems: stack});
 
             // Remove leading line number if present (e.g., "   1 01 CUSTOMER-RECORD" -> "01 CUSTOMER-RECORD")
@@ -214,6 +216,7 @@ export class CopybookParser {
             }
             
             stack.push({ level: level, item: dataItem });
+            // Emit the 'endLine' event and provide copybook path, currently processed line, newly created/parsed item and previously parsed items as payload
             this.emitter.emit('endLine', { copybook: this.copybookPath, line: line, newItem: { level: level, item: dataItem }, parsedItems: stack })
         }
 
@@ -221,7 +224,10 @@ export class CopybookParser {
         this.copyOffsetsForRedefines(dataItems);
         this.parsedCopybook = this.handleOccurs(dataItems);
         this.calculateTotalByteLength(this.parsedCopybook);
+
+        // Emit the 'end' event and provide the copybook path and the parsed copybook's dataItems as payload
         this.emitter.emit('end', { copybook: this.copybookPath, parsedCopybook: this.parsedCopybook });
+        
         return this.parsedCopybook;
     }
 
