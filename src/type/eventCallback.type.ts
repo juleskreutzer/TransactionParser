@@ -1,0 +1,1 @@
+export type EventCallback<T> = (payload: T) => void
