@@ -73,7 +73,9 @@ export class TypedEventEmitter<TEvents> {
     emit<K extends keyof TEvents>(event: K, payload: TEvents[K]): void {
         const callbacks = this.listeners[event]
         if (callbacks) {
-            callbacks.forEach((cb) => cb(payload))
+            // Create a copy to avoid issues when callbacks modify the listeners array
+            const callbacksCopy = [...callbacks]
+            callbacksCopy.forEach((cb) => cb(payload))
         }
     }
 
