@@ -6,6 +6,7 @@ import type { usageType } from "../type/usage.type.js";
 import type { IDataPosition } from "../interface/dataPosition.interface.js";
 import { TypedEventEmitter } from "../events/typedEventEmitter.ts";
 import type { IParsingEvent } from "../interface/parsingEvent.interface.ts";
+import type { IEventSupport } from "../interface/eventSupport.interface.ts";
 
 /**
  * @class
@@ -23,8 +24,11 @@ import type { IParsingEvent } from "../interface/parsingEvent.interface.ts";
  * parser.getParsedCopybook(); // Retrieve copybook as object, also returned by the parse() function
  * parser.toJson(); // Retrieve copybook as JSON string
  * ```
+ * 
+ * @remarks
+ * This class supports events via {@link TypedEventEmitter}, see {@link IParsingEvent}
  */
-export class CopybookParser {
+export class CopybookParser implements IEventSupport {
     private copybookPath: string
     private parsedCopybook: DataItem[];
     private totalByteLength: number = 0;

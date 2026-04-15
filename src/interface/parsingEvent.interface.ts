@@ -1,11 +1,12 @@
 import type { DataItem } from "../transaction/dataItem.ts"
+import type { IEvent } from "./event.interface.ts"
 
 /**
  * @interface
  * IParsingEvent interface is a helper interface to define the events that are submitted 
  * during parsing of a copybook and the data of these events.
  */
-export interface IParsingEvent {
+export interface IParsingEvent extends IEvent {
     /**
      * Fired at the beginning of parsing a copybook
      * Returns the following values:

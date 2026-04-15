@@ -30,9 +30,9 @@ import type { EventCallback } from "../type/eventCallback.type.ts";
  * emitter.emit('start', { copybook: '/path/to/copybook', rawData: '  rawData  ', preparedData: ['rawData']})
  * ```
  */
-export class TypedEventEmitter<TEvents> {
+export class TypedEventEmitter<IEvent> {
     private listeners: {
-        [K in keyof TEvents]?: EventCallback<TEvents[K]>[];
+        [K in keyof IEvent]?: EventCallback<IEvent[K]>[];
     } = {};
 
     /**
@@ -41,7 +41,7 @@ export class TypedEventEmitter<TEvents> {
      * @param event Type of event to subscribe to
      * @param callback Callback to execute when event is triggered
      */
-    subscribe<K extends keyof TEvents>(event: K, callback: EventCallback<TEvents[K]>): void {
+    subscribe<K extends keyof IEvent>(event: K, callback: EventCallback<IEvent[K]>): void {
         if (!this.listeners[event]) {
             this.listeners[event] = []
         }
@@ -54,7 +54,7 @@ export class TypedEventEmitter<TEvents> {
      * @param event  Type of event to unsubscribe for
      * @param callback Callback that will be unsubscribed
      */
-    unsubscribe<K extends keyof TEvents>(event: K, callback: EventCallback<TEvents[K]>): void {
+    unsubscribe<K extends keyof IEvent>(event: K, callback: EventCallback<IEvent[K]>): void {
         const callbacks = this.listeners[event]
         if (callbacks) {
             const index = callbacks.indexOf(callback);
@@ -70,7 +70,7 @@ export class TypedEventEmitter<TEvents> {
      * @param event Type of event to emit
      * @param payload Data that will be provided to the subscribers
      */
-    emit<K extends keyof TEvents>(event: K, payload: TEvents[K]): void {
+    emit<K extends keyof IEvent>(event: K, payload: IEvent[K]): void {
         const callbacks = this.listeners[event]
         if (callbacks) {
             // Create a copy to avoid issues when callbacks modify the listeners array when using 'once'
@@ -87,8 +87,8 @@ export class TypedEventEmitter<TEvents> {
      * @param event Type of event to subscribe to
      * @param callback Callback to execute when event is triggered
      */
-    once<K extends keyof TEvents>(event: K, callback: EventCallback<TEvents[K]>): void {
-        const wrapper: EventCallback<TEvents[K]> = (payload) => {
+    once<K extends keyof IEvent>(event: K, callback: EventCallback<IEvent[K]>): void {
+        const wrapper: EventCallback<IEvent[K]> = (payload) => {
             this.unsubscribe(event, wrapper)
             callback(payload)
         }
