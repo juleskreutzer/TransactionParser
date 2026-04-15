@@ -1,3 +1,26 @@
+### 0.3.0 (2026-04-15)
+
+##### Documentation Changes
+
+* **Events:**
+  *  Updated README.md to include documentation related to events ([5947ca29](https://github.com/juleskreutzer/TransactionParser/commit/5947ca299486c29d1046586b692b0f057fcfd23b))
+  *  Updated documentation for TypedEventEmitter ([511c9d1c](https://github.com/juleskreutzer/TransactionParser/commit/511c9d1cfb35b4fb6e77f6742793a51319f16d3b))
+
+##### New Features
+
+* **Events:**  Added support to fire the events starts, newLine, endLine and end when parsing a copybook ([d7194c47](https://github.com/juleskreutzer/TransactionParser/commit/d7194c47d6396db3280ab467244a2c69cb5b46c2))
+
+##### Other Changes
+
+* //github.com/juleskreutzer/TransactionParser into Dev-Events ([cb4650fb](https://github.com/juleskreutzer/TransactionParser/commit/cb4650fb4a4a9bdedf84da83eb967eb925c164a0))
+* **Events:**
+  *  Added TypedEventEmitter test cases ([8f87528f](https://github.com/juleskreutzer/TransactionParser/commit/8f87528f69d9c3a8249d1c1587d400404e3c340d))
+  *  Added TypedEventEmitter test cases ([f456e91a](https://github.com/juleskreutzer/TransactionParser/commit/f456e91ad47f6a81151977eb6c9f95ddd8344667))
+
+##### Refactors
+
+*  Renamed ILookupTable source file according to standards ([4b71d796](https://github.com/juleskreutzer/TransactionParser/commit/4b71d796463251b6886be507b4842326f0760783))
+
 #### 0.2.3 (2026-02-21)
 
 ##### Bug Fixes
