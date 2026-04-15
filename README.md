@@ -6,6 +6,25 @@ Parse files containing transaction data using COBOL copybooks into a TypeScript 
 
 Documentation is published on [Github Pages](https://juleskreutzer.github.io/TransactionParser/).
 
+## Table of Contents
+- [Parse copybooks](#parse-copybooks)
+  - [Example](#example)
+- [Transaction Packages and Transactions](#transaction-packages-and-transactions)
+  - [Usage](#usage)
+  - [Editing data from a transaction](#editing-data-from-a-transaction)
+  - [Saving data](#saving-data)
+- [Events](#events)
+  - [Copybook parsing](#copybook-parsing)
+    - [start event](#start-event)
+    - [newLine event](#newline-event)
+    - [endLine event](#endline-event)
+    - [end event](#end-event)
+- [CLI](#cli)
+  - [Installation](#installation)
+  - [Usage](#usage-1)
+    - [Convert data to JSON](#convert-data-to-json)
+    - [Convert data to CSV](#convert-data-to-csv)
+
 ## Parse copybooks
 This package supports parsing a copybook into a TypeScript object.
 
@@ -120,6 +139,81 @@ tp.save('/path/my_modified_transaction');
 > Note: This uses the `TransactionPackage#toBuffer()` method which will add the new line character, EBCDIC byte `x'15'` at the end of every transaction.
 
 Alternatively, you can also use the `toJson()` or `toBuffer()` methods to convert the transaction package to a stringyfied JSON array or buffer.
+
+## Events
+This package emits _typed_ events during certain stages of processing, for example when parsing a copybook.
+
+Use the `getEventEmitter()` method on supported classes to subscribe to events.
+Events are supported in every class that implements the `IEventSupport` interface:
+- CopybookParser
+
+#### Example
+```ts
+const parser = new CopybookParser('/path/to/copybook')
+const emitter = parser.getEventEmitter()
+
+emitter.subscribe('start', (payload) => {
+  console.log(payload) // Contains properties copybook, rawData and preparedData
+})
+
+const newLineFunc = (payload) => {
+  console.log(payload)
+}
+
+emitter.subscribe('newLine', newLineFunc) // Subscribes to the 'newLine' event
+emitter.unsubscribe('newLine', newLineFunc) // Unsubscribe from the 'newLine' event
+
+emitter.once('endLine', (payload) => {
+  console.log(payload) // Only logged once, for the first 'endLine' event
+})
+```
+
+### Copybook parsing
+During parsing of a copybook, the following events are emitted:
+- `start`
+- `newLine`
+- `endLine`
+- `end`
+
+#### start event
+This event is emitted at the beginning of parsing a copybook
+
+| Property | Value
+| - | - |
+| `copybook` | Path of the copybook that will be parsed |
+| `preparedData` | Array of strings containing the lines to be parsed |
+| `rawData` | Data loaded from the copybook file that will be processed after being prepared |
+
+> `preparedData` is `rawData` splitted on every new line, tabs are replaced with ` ` (space). Only includes non-empty lines
+
+#### newLine event
+This event is emitted at the beginning of each new line that is parsed
+
+| Property | Value |
+| - | - |
+| `copybook` | Path of the copybook that is being parsed |
+| `line` | Current line that is being parsed |
+| `parsedItems` | Array of objects of previously parsed lines containing `item` (DataItem) and `level` (number) properties
+
+#### endLine event
+This event is emitted for each line when parsing has finished
+
+| Property | Value | 
+| - | - |
+| `copybook` | Path of the copybook that is being parsed |
+| `line` | Current line that is being parsed |
+| `newItem` | Object representing the current line containing the `item` (DataItem) and `level` (number) properties |
+| `parsedItems` | Array of objects of previously parsed lines containing `item` (DataItem) and `level` (number) properties |
+
+> `parsedItems` will include `newItem`
+
+#### end event
+This event is emitted when parsing of the copybook is finished.
+
+| Property | Value |
+| - | - |
+| `copybook` | Path of the copybook that has been parsed | 
+| `parsedCopybook` | Array of DataItems into which the copybook has parsed. For these DataItem's, `children`, `occurs` and `redefines` clauses have been resolved.
 
 ## CLI
 This package also provides a Command Line Interface (CLI) to convert a (binairy) transaction file into a JSON or CSV file.
