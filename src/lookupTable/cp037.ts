@@ -1,5 +1,5 @@
 // based on https://www.lookuptables.com/text/ebcdic
-import type { ILookupTable } from "../interface/lookupTableInterface.ts";
+import type { ILookupTable } from "../interface/lookupTable.interface.ts";
 
 /**
  * Constant that can be used for lookup during conversion from EBCDIC

@@ -4,6 +4,9 @@ import { readFile, checkPathExists } from "../util/index.js";
 import type { ICopybookItem } from "../interface/copybookItem.interface.js";
 import type { usageType } from "../type/usage.type.js";
 import type { IDataPosition } from "../interface/dataPosition.interface.js";
+import { TypedEventEmitter } from "../events/typedEventEmitter.ts";
+import type { IParsingEvent } from "../interface/parsingEvent.interface.ts";
+import type { IEventSupport } from "../interface/eventSupport.interface.ts";
 
 /**
  * @class
@@ -21,11 +24,15 @@ import type { IDataPosition } from "../interface/dataPosition.interface.js";
  * parser.getParsedCopybook(); // Retrieve copybook as object, also returned by the parse() function
  * parser.toJson(); // Retrieve copybook as JSON string
  * ```
+ * 
+ * @remarks
+ * This class supports events via {@link TypedEventEmitter}, see {@link IParsingEvent}
  */
-export class CopybookParser {
+export class CopybookParser implements IEventSupport {
     private copybookPath: string
     private parsedCopybook: DataItem[];
     private totalByteLength: number = 0;
+    private emitter: TypedEventEmitter<IParsingEvent>
     
     constructor(copybookPath: string) {
         if (copybookPath === '') {
@@ -35,6 +42,9 @@ export class CopybookParser {
         checkPathExists(copybookPath);
         this.copybookPath = copybookPath;
         this.parsedCopybook = [];
+
+        // Initialize event emitter for later use
+        this.emitter = new TypedEventEmitter<IParsingEvent>();
     }
 
     /**
@@ -67,10 +77,16 @@ export class CopybookParser {
         const dataItems: DataItem[] = [];
         const stack: { level: number, item: DataItem}[] = [];
 
+        // Emit the 'start' event and provide copybook, raw data and lines that will be processed as payload
+        this.emitter.emit('start', { copybook: this.copybookPath, rawData: data, preparedData: lines});
+
         for (let l of lines) {
             // Remove trailing period and inline comments
             let line = l.replace(/\./g, '').trim();
             if (line === '') continue;
+
+            // Emit the 'newLine' event and provide copybook path, line that is currently processed and items that have already been processed as payload
+            this.emitter.emit('newLine', { copybook: this.copybookPath, line: line, parsedItems: stack});
 
             // Remove leading line number if present (e.g., "   1 01 CUSTOMER-RECORD" -> "01 CUSTOMER-RECORD")
             line = line.replace(/^\s*\d+\s+(\d{1,2}\s+)/, '$1');
@@ -204,12 +220,18 @@ export class CopybookParser {
             }
             
             stack.push({ level: level, item: dataItem });
+            // Emit the 'endLine' event and provide copybook path, currently processed line, newly created/parsed item and previously parsed items as payload
+            this.emitter.emit('endLine', { copybook: this.copybookPath, line: line, newItem: { level: level, item: dataItem }, parsedItems: stack })
         }
 
         this.setAbsoluteOffsets(dataItems);
         this.copyOffsetsForRedefines(dataItems);
         this.parsedCopybook = this.handleOccurs(dataItems);
         this.calculateTotalByteLength(this.parsedCopybook);
+
+        // Emit the 'end' event and provide the copybook path and the parsed copybook's dataItems as payload
+        this.emitter.emit('end', { copybook: this.copybookPath, parsedCopybook: this.parsedCopybook });
+        
         return this.parsedCopybook;
     }
 
@@ -454,5 +476,13 @@ export class CopybookParser {
                 this.copyOffsetsFromTarget(item.children[i] as DataItem, target.children[i] as ICopybookItem);
             }
         }
+    }
+
+    /**
+     * Get the {@link TypedEventEmitter} used in this parser instance
+     * @returns emitter 
+     */
+    getEventEmitter(): TypedEventEmitter<IParsingEvent> {
+        return this.emitter;
     }
 }
