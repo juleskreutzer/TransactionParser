@@ -9,6 +9,7 @@ export * from "./interface/numericFormatOptions.interface.js";
 export * from "./interface/parsingEvent.interface.js"
 export * from "./interface/transaction.interface.js";
 export * from "./interface/transactionPackage.interface.js";
+export * from "./interface/transactionPackageEvent.interface.js"
 export * from "./lookupTable/cp037.js";
 export * from "./parser/copybookParser.js";
 export * from "./transaction/dataItem.js";

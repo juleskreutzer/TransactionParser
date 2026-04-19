@@ -2,10 +2,14 @@ import { Transaction } from "./transaction.js";
 import { CopybookParser } from "../parser/copybookParser.js";
 import { checkPathExists, readFileAsBuffer, splitBuffer, writeFile } from "../util/index.js";
 import { DataItem } from "./dataItem.js";
+import { TypedEventEmitter } from "../events/typedEventEmitter.ts";
 import type { ITransactionPackage } from "../interface/transactionPackage.interface.js";
 import type { ITransaction } from "../interface/transaction.interface.js";
 import type { ICopybookItem } from "../interface/copybookItem.interface.js"
 import type { IDataPosition } from "../interface/dataPosition.interface.ts";
+import type { IEventSupport } from "../interface/eventSupport.interface.ts";
+import type { IEvent } from "../interface/event.interface.ts";
+import type { ITransactionPackageEvent } from "../interface/transactionPackageEvent.interface.ts"
 
 /**
  * @class
@@ -20,10 +24,14 @@ import type { IDataPosition } from "../interface/dataPosition.interface.ts";
  * 
  * console.log(tp.transactions); // Logs all transaction in package
  * ```
+ * 
+ * @remarks
+ * This calss supports events via {@link TypedEventEmitter}, see {@link ITransactionPackageEvent}
  */
-export class TransactionPackage implements ITransactionPackage {
+export class TransactionPackage implements ITransactionPackage, IEventSupport {
     transactions: ITransaction[];
     readonly parser: CopybookParser;
+    private emitter: TypedEventEmitter<ITransactionPackageEvent>;
     
     constructor(copybookPath: string, transactions?: ITransaction[]) {
         if (copybookPath === '') throw new Error(`Please provide a copybook path`);
@@ -31,9 +39,19 @@ export class TransactionPackage implements ITransactionPackage {
         // Check if copybook path exists
         checkPathExists(copybookPath);
 
+        // Initialize event emitter for later use
+        this.emitter = new TypedEventEmitter<ITransactionPackageEvent>();
+
         this.parser = new CopybookParser(copybookPath);
         this.parser.parse();
+        
+        // Copybook has been parsed, emit event
+        this.emitter.emit('parsingComplete', { parser: this.parser, parsedCopybook: this.parser.getParsedCopybook() });
+
         this.transactions = transactions === undefined ? [] : transactions.length > 0 ? transactions : [];
+        
+        // Transactions are assigned, if provided, otherwise empty array
+        this.emitter.emit('transactionsLoaded', { parser: this.parser, transactions: this.transactions})
     }
 
     /**
@@ -91,6 +109,9 @@ export class TransactionPackage implements ITransactionPackage {
         buffers.forEach(buf => {
             this.transactions.push(new Transaction(this.clone(this.parser.getParsedCopybook()), buf));
         })
+
+        // Emit event that transactions are loaded
+        this.emitter.emit('transactionsLoaded', { parser: this.parser, transactions: this.transactions });
     }
 
     /**
@@ -126,6 +147,9 @@ export class TransactionPackage implements ITransactionPackage {
      */
     createEmptyTransaction(): void {
         this.transactions.push(new Transaction(this.clone(this.parser.getParsedCopybook())));
+
+        // Emit event that new transaction is created
+        this.emitter.emit('transactionCreated', { parser: this.parser, newTransaction: this.getLastTransaction()!, transactions: this.transactions})
     }
 
     /**
@@ -172,7 +196,15 @@ export class TransactionPackage implements ITransactionPackage {
      */
     save(path: string): void {
         if (path === '') throw new Error('Please provide a path to save the transaction package to');
-        writeFile(this.toBuffer(), path);
+        const dataToSave: Buffer = this.toBuffer();
+        writeFile(dataToSave, path);
+
+        // Emit event that transactions are saved to file
+        this.emitter.emit('transactionPackageSaved', { parser: this.parser, transactions: this.transactions, buffer: dataToSave, outputPath: path});
+    }
+
+    getEventEmitter(): TypedEventEmitter<IEvent> {
+        return this.emitter
     }
 
 }
