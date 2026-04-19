@@ -17,7 +17,7 @@
     "clean": "rm -r ./dist",
     "build": "tsc",
     "compile": "npm run build",
-    "docs": "npx typedoc --name TransactionParser --includeVersion",
+    "docs": "npx typedoc",
     "prepublish": "npm run build",
     "release:major": "changelog -M && git add CHANGELOG.md && git commit -m \"updated CHANGELOG.md\" && npm version major && git push origin && git push origin --tags",
     "release:minor": "changelog -m && git add CHANGELOG.md && git commit -m \"updated CHANGELOG.md\" && npm version minor && git push origin && git push origin --tags",

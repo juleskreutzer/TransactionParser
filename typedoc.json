@@ -1,0 +1,9 @@
+{
+    "$schema": "https://typedoc.org/schema.json",
+    "name": "TransactionParser",
+    "includeVersion": true,
+    "out": "./docs",
+    "externalSymbolLinkMappings": {
+        "@types/node": { "__global.Buffer": "https://nodejs.org/api/buffer.html#buffer"}
+    }
+}
