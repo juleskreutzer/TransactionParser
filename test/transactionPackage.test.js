@@ -133,4 +133,52 @@ describe('TransactionPackage', () => {
 
     fs.rmSync(tempDir, { recursive: true, force: true });
   });
+
+  it('emits transaction package events for create, load, and save', () => {
+    const pkg = new TransactionPackage(copybookPath);
+    const emitter = pkg.getEventEmitter();
+    let createdCount = 0;
+    let loadedTransactions = [];
+    let savedPayload;
+
+    emitter.subscribe('transactionCreated', (payload) => {
+      createdCount += 1;
+      assert.strictEqual(payload.transactions.length, createdCount);
+      assert.strictEqual(payload.newTransaction, payload.transactions[payload.transactions.length - 1]);
+      assert.strictEqual(payload.parser, pkg.parser);
+    });
+
+    emitter.subscribe('transactionsLoaded', (payload) => {
+      loadedTransactions = payload.transactions;
+      assert.strictEqual(payload.parser, pkg.parser);
+    });
+
+    emitter.subscribe('transactionPackageSaved', (payload) => {
+      savedPayload = payload;
+      assert.strictEqual(payload.parser, pkg.parser);
+    });
+
+    pkg.createEmptyTransaction();
+    pkg.createEmptyTransaction();
+
+    assert.strictEqual(createdCount, 2, 'transactionCreated should fire for each created transaction');
+
+    const rawData = pkg.toBuffer();
+    pkg.load(rawData);
+
+    assert.strictEqual(loadedTransactions.length, 4, 'transactionsLoaded should reflect all loaded transactions');
+    assert.strictEqual(pkg.transactions.length, 4, 'package should contain the loaded transactions after load');
+
+    const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'transaction-package-'));
+    const filePath = path.join(tempDir, 'package.dat');
+
+    pkg.save(filePath);
+
+    assert(savedPayload, 'transactionPackageSaved should be emitted when save is called');
+    assert.strictEqual(savedPayload.outputPath, filePath);
+    assert.deepStrictEqual(savedPayload.buffer, pkg.toBuffer());
+    assert.strictEqual(savedPayload.transactions.length, pkg.transactions.length);
+
+    fs.rmSync(tempDir, { recursive: true, force: true });
+  });
 });
