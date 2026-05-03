@@ -12,13 +12,22 @@ import type { ITransaction } from "./transaction.interface.ts";
 export interface ITransactionPackageEvent extends IEvent {
 
     /**
+     * Fired after {@link CopybookParser} is initialized and before parsing starts.
+     * Can be used to subsribe to parsing events via `parser.getEventEmitter()`
+     * Returns the following values:
+     * - `parser`: Instance of {@link CopybookParser} that is used to parse the provided copybook
+     * 
+     *  @remarks
+     * To receive events related to Copybook parsing, use the {@link TransactionPackage.parser | `parser` property}, see {@link IParsingEvent} for available events
+     */
+    beforeParsing: { parser: CopybookParser }
+
+    /**
      * Fired after the copybook provided when creating a transaction package has been parsed
      * Returns the following values:
      * - `parser`: Instance of {@link CopybookParser} that is used to parse the provided copybook
      * - `parsedCopybook`: Array of {@link DataItem} containing the parsed copybook values
      * 
-     * @remarks
-     * To receive events related to Copybook parsing, use the {@link TransactionPackage.parser | `parser` property}, see {@link IParsingEvent} for available events
      */
     parsingComplete: { parser: CopybookParser, parsedCopybook: DataItem[]}
 

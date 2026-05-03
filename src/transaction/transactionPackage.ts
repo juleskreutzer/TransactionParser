@@ -26,7 +26,7 @@ import type { ITransactionPackageEvent } from "../interface/transactionPackageEv
  * ```
  * 
  * @remarks
- * This calss supports events via {@link TypedEventEmitter}, see {@link ITransactionPackageEvent}
+ * This class supports events via {@link TypedEventEmitter}, see {@link ITransactionPackageEvent}
  */
 export class TransactionPackage implements ITransactionPackage, IEventSupport {
     transactions: ITransaction[];
@@ -43,6 +43,10 @@ export class TransactionPackage implements ITransactionPackage, IEventSupport {
         this.emitter = new TypedEventEmitter<ITransactionPackageEvent>();
 
         this.parser = new CopybookParser(copybookPath);
+
+        // Copybookparser instance created, emit event before parsing
+        this.emitter.emit('beforeParsing', { parser: this.parser});
+
         this.parser.parse();
         
         // Copybook has been parsed, emit event
