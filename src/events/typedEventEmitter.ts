@@ -12,6 +12,7 @@ import type { EventCallback } from "../type/eventCallback.type.ts";
  * ---
  * ### Supported events
  * - {@link IParsingEvent } defines the `start`, `newLine`, `endLine` and `end` event that are triggered during copybook parsing
+ * - {@link ITransactionPackageEvent } defines the `parsingComplete`, `transactionsLoaded`, `transactionCreated` and `transactionPackageSaved` event that are triggered by certain actions within this class
  * 
  * 
  * @example

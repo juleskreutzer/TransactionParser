@@ -54,6 +54,36 @@ describe('CopybookParser', () => {
       assert.strictEqual(cri.value, '0', 'CRI-BW5 should have value "0" (COMP field stores raw numeric)');
       assert.strictEqual(cri.length, 2, 'CRI-BW5 should have length 2');
     });
+
+    it('emits parsing lifecycle events during copybook parsing', () => {
+      const parser = new CopybookParser(path.join(assetsDir, 'generic_copybook.txt'));
+      const emitter = parser.getEventEmitter();
+      let startPayload;
+      let endPayload;
+      const newLineEvents = [];
+      const endLineEvents = [];
+
+      emitter.subscribe('start', (payload) => { startPayload = payload; });
+      emitter.subscribe('newLine', (payload) => { newLineEvents.push(payload); });
+      emitter.subscribe('endLine', (payload) => { endLineEvents.push(payload); });
+      emitter.subscribe('end', (payload) => { endPayload = payload; });
+
+      const result = parser.parse();
+
+      assert(startPayload, 'start event should be emitted');
+      assert.strictEqual(startPayload.copybook, path.join(assetsDir, 'generic_copybook.txt'));
+      assert(Array.isArray(startPayload.preparedData), 'start payload should include preparedData array');
+      assert(startPayload.preparedData.length > 0, 'preparedData should contain at least one line');
+      assert.strictEqual(newLineEvents.length, startPayload.preparedData.length, 'newLine should fire for each parsed line');
+      assert.strictEqual(endLineEvents.length, startPayload.preparedData.length, 'endLine should fire for each parsed line');
+      assert.ok(newLineEvents[0].line.includes('WS-AREA'), 'first newLine event should include the WS-AREA line');
+      assert.strictEqual(endLineEvents[0].newItem.level, 1);
+      assert.strictEqual(endLineEvents[0].newItem.item.name, 'WS-AREA');
+
+      assert(endPayload, 'end event should be emitted');
+      assert(Array.isArray(endPayload.parsedCopybook), 'end payload should include parsedCopybook array');
+      assert.strictEqual(endPayload.parsedCopybook.length, result.length);
+    });
   });
 
   describe('occurs copybook', () => {
