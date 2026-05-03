@@ -1,3 +1,20 @@
+#### 0.3.1 (2026-05-03)
+
+##### Documentation Changes
+
+* **Events:**  Added documentation for new TransactionPackage events ([c0a10e08](https://github.com/juleskreutzer/TransactionParser/commit/c0a10e086a8dad1845b3cbbef6c30a1491010c8d))
+
+##### New Features
+
+* **Events:**  Add support for events in TransactionPackage ([8d25dcb5](https://github.com/juleskreutzer/TransactionParser/commit/8d25dcb5f60be5b32e9cc3a990af22d02117b8c9))
+
+##### Other Changes
+
+* **Events:**
+  *  Added unit tests for parsing events ([d5051db3](https://github.com/juleskreutzer/TransactionParser/commit/d5051db3e4dd1e5d1fc2026e31ad189db2887145))
+  *  Added unit tests for transacton package events ([e2fa2b82](https://github.com/juleskreutzer/TransactionParser/commit/e2fa2b82f3394b57fe0c3e801109e29375e9d228))
+* **docs:**  Use custom typedoc.json to generate docs site ([3f592f74](https://github.com/juleskreutzer/TransactionParser/commit/3f592f74cacba308c2512d21bc567125ccd93e12))
+
 ### 0.3.0 (2026-04-15)
 
 ##### Documentation Changes
