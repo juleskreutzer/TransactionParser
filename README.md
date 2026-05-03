@@ -215,6 +215,62 @@ This event is emitted when parsing of the copybook is finished.
 | `copybook` | Path of the copybook that has been parsed | 
 | `parsedCopybook` | Array of DataItems into which the copybook has parsed. For these DataItem's, `children`, `occurs` and `redefines` clauses have been resolved.
 
+### Transaction Package
+When using a transaction package, the following event are emitted:
+- `beforeParsing`
+- `parsingComplete`
+- `transactionLoaded`
+- `transactionCreated`
+- `transactionPackageSave`
+
+#### beforeParsing event
+This event is emitted after `CopybookParser` instance is created and before actual parsing of the copybook.
+
+| Property | Value |
+| - | - |
+| `parser` | Instance of `CopybookParser` that is used to parse the provided copybook |
+
+> Use `parser.getEventEmitter()` to subscribe to event that are emitted during copybook parsing. See [Copybook Parsing](#copybook-parsing)
+
+#### parsingCompleted event
+This event is emitted after the parsing of a copybook provided when creating a transaction package has been completed
+
+| Property | Value |
+| - | - |
+| `parser` | Instance of `CopybookParser` that is used to parse the provided copybook. |
+| `parsedCopybook` | An array of `DataItem` representing the parsed copybook | 
+
+#### transactionLoaded event
+This event is emitted when:
+- A new transaction package instance is created
+- When a transactions are loaded via the `loadFile()` or `load()` methods
+
+| Property | Value |
+| - | - |
+| `parser` | Instance of `CopybookParser` that is used to parse the provided copybook |
+| `transactions` | Array of `ITransaction` instances that have been loaded into the transaction package |
+
+> `transactions` is possibly an empty array
+
+#### transactionCreated event
+This event is emitted when a new transaction is created after the transaction package has been initialized by calling `createEmptyTransaction()`
+
+| Property | Value |
+| - | - |
+| `parser` | Instance of `CopybookParser` that is used to parse the provided copybook |
+| `newTransaction` | `ITransaction` that was recently created |
+| `transactions` | Array of `ITransaction` containing the transactions that are included in the current transaction package. This includes `newTransaction` |
+
+#### transactionPackageSave event
+This event is emitted when a transaction package is stored to a file
+
+| Property | Value |
+| - | - |
+| `parser` | Instance of `CopybookParser` that is used to parse the provided copybook |
+| `transactions` | Array of `ITransaction` containing all transactions that are included in the current transaction package |
+| `buffer` | [NodeJS Buffer](https://nodejs.org/api/buffer.html#buffer) containing the raw data that will be written to `outputPath` |
+| `outputPath` | Path where the transaction package will be stored |
+
 ## CLI
 This package also provides a Command Line Interface (CLI) to convert a (binairy) transaction file into a JSON or CSV file.
 
@@ -233,7 +289,7 @@ This will make the `transactionparser` (or the shorter `traper` version) availab
 
 #### Convert data to JSON
 ```bash
-trapar parse 'path/to/data' -c 'path/to/copybook' -f 'JSON' -o 'output.txt'` 
+trapar parse 'path/to/data' -c 'path/to/copybook' -f 'JSON' -o 'output.txt' 
 ```
 Convert the data at `path/to/data` using the copybook located at `/path/to/copybook` and format it to a `JSON` string stored in `output.txt`
 
